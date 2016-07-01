@@ -40,3 +40,5 @@ export EDITOR=vim
 # Must occur after local config for aliases
 eval `dircolors ~/.dir_colors`
 
+
+export PATH="$PATH" # Add current bin for easier rails dev
