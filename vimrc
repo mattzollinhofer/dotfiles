@@ -10,7 +10,7 @@ let mapleader = " "
 " Make backspace behave in a sane manner.
 set backspace=indent,eol,start
 
-let g:rspec_command = "Dispatch spring rspec {spec}"
+let g:rspec_command = "Dispatch -compiler=rspec spring rspec {spec}"
 let g:rspec_runner = "os_x_iterm"
 map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
