@@ -10,7 +10,7 @@ let mapleader = " "
 " Make backspace behave in a sane manner.
 set backspace=indent,eol,start
 
-let g:rspec_command = "Dispatch -compiler=rspec spring rspec {spec}"
+let g:rspec_command = "Dispatch -compiler=rspec rspec {spec}"
 let g:rspec_runner = "os_x_iterm"
 map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
@@ -103,7 +103,6 @@ vnoremap <tab> %
 " Prevent recording when trying to quit
 map q <nop>
 inoremap jk <Esc>:w<CR>
-nnoremap ; :
 
 " Make ctrl+space autocomplete
 inoremap <C-Space> <C-p>
@@ -120,8 +119,6 @@ nnoremap <leader>r :!rubocop -a %<CR>
 " Ggrep whole project for the word under cursor
 nnoremap <leader>g :Ggrep '<cword>'<CR>
 
-nnoremap ; :
-
 " Quicker window movement
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -132,7 +129,7 @@ nnoremap <C-l> <C-w>l
 nnoremap j gj
 nnoremap k gk
 
-nnoremap <Leader>c :Console<CR>
+" nnoremap <Leader>c :Console<CR>
 nnoremap <Left> :vertical resize +5<CR>
 nnoremap <Right> :vertical resize -5<CR>
 nnoremap <Up> :resize +5<CR>
@@ -143,21 +140,22 @@ set wildignore=*/log/*,*/tmp/*
 " Color scheme
 syntax enable
 set background=dark
+let g:solarized_termtrans = 1
 colorscheme solarized
 
 set colorcolumn=110
 
 " Powerline fonts for status bar icons
 " let g:airline_powerline_fonts = 1
-let g:airline_left_sep=''                           " No separator as they seem to look funky
-let g:airline_right_sep=''                          " No separator as they seem to look funky
+"let g:airline_left_sep=''                           " No separator as they seem to look funky
+"let g:airline_right_sep=''                          " No separator as they seem to look funky
 " let g:airline#extensions#branch#enabled = 0         " Do not show the git branch in the status line
-let g:airline#extensions#syntastic#enabled = 1      " Do show syntastic warnings in the status line
+"let g:airline#extensions#syntastic#enabled = 1      " Do show syntastic warnings in the status line
 "let g:airline#extensions#tabline#show_buffers = 0   " Do not list buffers in the status line
-let g:airline_section_x = ''                        " Do not list the filetype or virtualenv in the status line
-let g:airline_section_y = ''                        " Replace file encoding and file format info with file position
-let g:airline_section_z = ''                        " Do not show the default file position info
-let g:airline#extensions#virtualenv#enabled = 0
+"let g:airline_section_x = ''                        " Do not list the filetype or virtualenv in the status line
+"let g:airline_section_y = ''                        " Replace file encoding and file format info with file position
+"let g:airline_section_z = ''                        " Do not show the default file position info
+"let g:airline#extensions#virtualenv#enabled = 0
 
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_max_files=0
@@ -174,6 +172,9 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . -co --exclude-stand
 
 nnoremap <leader>1 :!<space>
 
+nmap <C-_> gcc
+vmap <C-_> gcc
+
 " Fugitive shortcuts
 nnoremap <leader>G :Git<space>
 nnoremap <leader>gst :Gstatus<CR>
@@ -182,11 +183,11 @@ nnoremap <leader>gp :Gpull<CR>
 nnoremap <leader>gpush :Gpush<space>
 nnoremap <leader>gls :!git ls<CR>
 nnoremap <leader>gl :!git ls<CR>
-nnoremap <leader>gsh :Git show<space>
-nnoremap <leader>ga :Git add -p %<CR>
+nnoremap <leader>gsh :!clear;git show<space>
+nnoremap <leader>ga :!clear;git add -p %<CR>
 nnoremap <leader>gci :Git ci<CR>
 nnoremap <leader>gcf :Git checkout %<space>
-nnoremap <leader>gbr :Git branch<CR>
+nnoremap <leader>gbr :!clear;git branch<CR>
 
 nnoremap <leader>gcm :Git checkout master<CR>
 nnoremap <leader>gcl :Git checkout -<CR>
@@ -199,13 +200,15 @@ nnoremap <leader>gri :Git rebase -i HEAD~~~~
 nnoremap <leader>gml :Git merge --no-ff -<CR>
 nnoremap <leader>gm :Git merge --no-ff<space>
 
-nnoremap <leader>gd<space> :Git diff -w<CR>
-nnoremap <leader>gd :Git diff -w<CR>
-nnoremap <leader>gds :Git diff --staged<CR>
+nnoremap <leader>gd<space> :!clear;git diff -w<CR>
+nnoremap <leader>gd :!clear;git diff -w<CR>
+nnoremap <leader>gdd :!clear;git diff -w<CR>
+nnoremap <leader>gdf :!clear;git diff -w %<CR>
+nnoremap <leader>gds :!clear;git diff --staged<CR>
 
-nnoremap <leader>gsl :Git stash list<CR>
-nnoremap <leader>gss :Git stash save<space>
-nnoremap <leader>gsp :Git stash pop stash@{<space>
+nnoremap <leader>gsl :!clear;git stash list<CR>
+nnoremap <leader>gss :!clear;git stash save<space>
+nnoremap <leader>gsp :!clear;git stash pop stash@{<space>
 
 nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
@@ -232,6 +235,12 @@ function! QuickfixToggle()
     copen
     let g:quickfix_is_open = 1
   endif
+endfunction
+
+
+au FileType qf call AdjustWindowHeight(3, 30)
+function! AdjustWindowHeight(minheight, maxheight)
+    exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
 
 "nnoremap <C-m> <C-w>\| <C-w>_
