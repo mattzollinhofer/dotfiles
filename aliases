@@ -5,13 +5,17 @@ alias g=git
 alias d='git diff'
 alias s='git status'
 alias p='git pull'
+alias gls='git ls'
+alias gl='clear; git ls'
 alias hub=git
+alias psg="ps -ef | grep "
 alias ln='ln -v'
 alias mkdir='mkdir -p'
 alias ls='ls -G'
 alias ll='ls -Alh'
 alias l='ll'
 alias c=clear
+alias hg='history | grep -i'
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

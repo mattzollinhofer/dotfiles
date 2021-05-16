@@ -125,6 +125,11 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
+" Better window manipulation
+nnoremap <C-w>e <C-w>=
+nnoremap <C-w><C-e> <C-w>=
+nnoremap <C-w><C-w> <C-w>_<C-w>\|
+
 " Don't skip over wrapped lines when moving
 nnoremap j gj
 nnoremap k gk
@@ -182,14 +187,16 @@ nnoremap <leader>gg :Ggrep -i<space>
 nnoremap <leader>gp :Gpull<CR>
 nnoremap <leader>gpush :Gpush<space>
 nnoremap <leader>gls :!git ls<CR>
-nnoremap <leader>gl :!git ls<CR>
+nnoremap <leader>gdr :Git log -p<CR>
+nnoremap <leader>gdrf :Git log -p %<CR>
 nnoremap <leader>gsh :!clear;git show<space>
 nnoremap <leader>ga :!clear;git add -p %<CR>
 nnoremap <leader>gci :Git ci<CR>
+nnoremap <leader>gca :Git ci --amend<CR>
 nnoremap <leader>gcf :Git checkout %<space>
 nnoremap <leader>gbr :!clear;git branch<CR>
 
-nnoremap <leader>gcm :Git checkout master<CR>
+nnoremap <leader>gcm :Git checkout ma<TAB>
 nnoremap <leader>gcl :Git checkout -<CR>
 nnoremap <leader>gcb :Git checkout -b<space>
 nnoremap <leader>gco :Git checkout<space>
@@ -212,6 +219,22 @@ nnoremap <leader>gsp :!clear;git stash pop stash@{<space>
 
 nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
+
+" NERDTree
+
+nnoremap <Leader>nt :NERDTreeToggle<CR>
+nnoremap <Leader>nf :NERDTreeFind<CR>
+
+nnoremap <Leader>foc :Goyo<CR>:SoftPencil<CR>
+augroup pencil
+  autocmd!
+  autocmd FileType markdown,mkd,md call pencil#init({'wrap': 'soft'})
+  autocmd FileType text            call pencil#init({'wrap': 'soft'})
+augroup END
+
+" keep running glow: while true; do clear; date; echo; echo; echo; glow 2020-06-14-racial-inequality.md; sleep 2; done
+nnoremap <Leader>glow :!glow %<CR>
+
 
 function! VisualFindAndReplace()
   :OverCommandLine%s/

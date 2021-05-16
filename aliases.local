@@ -1,2 +1,3 @@
-alias teachy='cd ~/Dropbox/dev/rails/teachy'
-alias dev='cd ~/Dropbox/dev/'
+alias teachy='cd ~/dev/rails/teachy'
+alias dev='cd ~/dev/js/vue-typeahead-bootstrap'
+alias bookworm='cd ~/dev/rails/fundraising'
