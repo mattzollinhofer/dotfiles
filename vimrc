@@ -104,6 +104,25 @@ inoremap jk <Esc>:w<CR>
 
 " Make ctrl+space autocomplete
 inoremap <C-Space> <C-p>
+
+nnoremap <C-p> :GFiles<CR>
+" this catches <C-Space> in normal mode
+nnoremap <NUL> :GFiles<CR>
+nnoremap <Leader>ff :GFiles<CR>
+" fzf all files
+nnoremap <Leader>fa :Files<CR>
+" fzf controllers
+nnoremap <Leader>fm :GFiles app/controllers<CR>
+" fzf models
+nnoremap <Leader>fm :GFiles app/models<CR>
+" fzf stylesheets
+nnoremap <Leader>fs :GFiles app/assets/stylesheets<CR>
+" fzf javascripts
+nnoremap <Leader>fj :GFiles app/assets/javascripts<CR>
+
+" Find shortcut
+nnoremap <Leader>f<space> /
+
 imap <C-@> <C-Space>
 
 " Save and Quit shortcuts
@@ -159,14 +178,6 @@ set colorcolumn=110
 "let g:airline_section_y = ''                        " Replace file encoding and file format info with file position
 "let g:airline_section_z = ''                        " Do not show the default file position info
 "let g:airline#extensions#virtualenv#enabled = 0
-
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_max_files=0
-let g:ctrlp_max_height = 18
-nnoremap <Leader>ff :CtrlP<CR>
-
-" Find shortcut
-nnoremap <Leader>f<space> /
 
 " Open last file
 nnoremap <leader>ll <C-^>

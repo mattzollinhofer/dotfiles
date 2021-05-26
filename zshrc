@@ -42,3 +42,6 @@ export EDITOR=vim
 
 
 export PATH="./bin:$PATH" # Add current bin for easier rails dev
+source /Users/matt/.asdf/asdf.sh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
