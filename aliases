@@ -2,16 +2,19 @@ alias vi=vim
 alias vv="vim ~/.vimrc"
 alias be='bundle exec'
 alias console='be pry -r ./config/environment.rb'
+
 alias g=git
 alias d='git diff'
 alias s='git status'
 alias p='git pull'
-alias gls='git ls'
+# alias gls='git ls'
 alias gl='clear; git ls'
 alias ga='clear; git add -p'
 alias gc='git ci'
 alias gca='clear; git ci --amend'
 alias hub=git
+alias gls="git ls | fzf --multi --reverse --preview 'git show {+2}'"
+
 alias psg="ps -ef | grep "
 alias ln='ln -v'
 alias mkdir='mkdir -p'
