@@ -6,6 +6,9 @@ export CLICOLOR=1
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
+setopt appendhistory
+setopt incappendhistory
+setopt sharehistory
 
 setopt autocd extendedglob nomatch notify
 # Fix issue using carrot in git refs
