@@ -1,1 +1,23 @@
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'stsewd/fzf-checkout.vim'
+
+"lightline statusbar
+Plug 'itchyny/lightline.vim'
+Plug 'niklaas/lightline-gitdiff'
+let g:lightline = {
+\   'colorscheme': 'wombat',
+\   'active': {
+\     'left': [ [ 'gitbranch', 'paste' ],
+\               [ 'readonly', 'filename', 'modified'] ],
+\     'right':[ [ 'mode' ] ]
+\   },
+\   'component_function': {
+\     'gitbranch': 'FugitiveHead'
+\   },
+\   'component_expand': {
+\     'gitdiff': 'lightline#gitdiff#get',
+\   },
+\   'component_type': {
+\     'gitdiff': 'middle',
+\   },
+\ }

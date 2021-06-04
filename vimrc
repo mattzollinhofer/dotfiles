@@ -187,7 +187,7 @@ nnoremap <leader>ga :!clear;git add -p %<CR>
 nnoremap <leader>gci :Git ci<CR>
 nnoremap <leader>gca :Git ci --amend<CR>
 nnoremap <leader>gcf :Git checkout %<space>
-nnoremap <leader>gbr :!clear;git branch<CR>
+nnoremap <leader>gbr :GBranches<CR>
 
 nnoremap <leader>gcm :Git checkout ma<TAB>
 nnoremap <leader>gcl :Git checkout -<CR>
