@@ -215,8 +215,8 @@ nnoremap <leader>gm :Git merge --no-ff<space>
 nnoremap <leader>gd<space> :!clear;git diff -w<CR>
 nnoremap <leader>gd :!clear;git diff -w<CR>
 nnoremap <leader>gdd :!clear;git diff -w<CR>
-nnoremap <leader>gdf :!clear;git diff -w %<CR>
-nnoremap <leader>gds :!clear;git diff --staged<CR>
+nnoremap <leader>gdf :Git diff -w %<CR>
+nnoremap <leader>gds :Git diff --staged<CR>
 
 nnoremap <leader>gsl :!clear;git stash list<CR>
 nnoremap <leader>gss :!clear;git stash save<space>
