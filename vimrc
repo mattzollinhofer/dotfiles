@@ -188,6 +188,7 @@ vmap <C-_> gcc
 nnoremap <leader>G :Git<space>
 nnoremap <leader>gst :Git<CR>
 nnoremap <leader>gg :Ggrep -i<space>
+nnoremap <leader>ag :Ag <space>
 nnoremap <leader>gp :Gpull<CR>
 nnoremap <leader>gpush :Gpush<space>
 nnoremap <leader>gls :!git ls<CR>
