@@ -8,14 +8,6 @@ let mapleader = " "
 " Make backspace behave in a sane manner.
 set backspace=indent,eol,start
 
-let g:rspec_command = "Dispatch -compiler=rspec rspec {spec}"
-let g:rspec_runner = "os_x_iterm"
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>l<space> :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
-
 " Save files on focus lost and allow hidden buffers
 au FocusLost * :wa
 set autowriteall
