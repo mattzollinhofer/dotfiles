@@ -186,7 +186,7 @@ vmap <C-_> gcc
 
 " Fugitive shortcuts
 nnoremap <leader>G :Git<space>
-nnoremap <leader>gst :Gstatus<CR>
+nnoremap <leader>gst :Git<CR>
 nnoremap <leader>gg :Ggrep -i<space>
 nnoremap <leader>gp :Gpull<CR>
 nnoremap <leader>gpush :Gpush<space>
