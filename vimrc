@@ -55,6 +55,9 @@ set laststatus=2
 
 :iabbr teh the
 
+nnoremap vv :tabnew ~/.vimrc<CR>
+nnoremap vr :source ~/.vimrc<CR>
+
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
 endif
