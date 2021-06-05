@@ -30,6 +30,8 @@ set nowrap
 set foldmethod=indent
 set nofoldenable
 
+let g:fzf_history_dir = '~/.fzf-history'
+
 nnoremap zx zMzvzazOzz
 vnoremap zx zMzvzazOzz
 nnoremap zt zt:call Flash() <CR>
