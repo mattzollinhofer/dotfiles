@@ -181,7 +181,7 @@ nnoremap <leader>gg :Ggrep -i<space>
 nnoremap <leader>ag :Ag <space>
 nnoremap <leader>gp :Gpull<CR>
 nnoremap <leader>gpush :Gpush<space>
-nnoremap <leader>gls :!git ls<CR>
+nnoremap <leader>gls :Commits<CR>
 nnoremap <leader>gdr :Git log -p<CR>
 nnoremap <leader>gdrf :Git log -p %<CR>
 nnoremap <leader>gsh :!clear;git show<space>
