@@ -212,36 +212,20 @@ nnoremap <leader>gsl :!clear;git stash list<CR>
 nnoremap <leader>gss :!clear;git stash save<space>
 nnoremap <leader>gsp :!clear;git stash pop stash@{<space>
 
-nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
-xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
-
 " NERDTree
-
 nnoremap <Leader>nt :NERDTreeToggle<CR>
 nnoremap <Leader>nf :NERDTreeFind<CR>
 
-nnoremap <Leader>foc :Goyo<CR>:SoftPencil<CR>
-augroup pencil
-  autocmd!
-  autocmd FileType markdown,mkd,md call pencil#init({'wrap': 'soft'})
-  autocmd FileType text            call pencil#init({'wrap': 'soft'})
-augroup END
+"nnoremap <Leader>foc :Goyo<CR>:SoftPencil<CR>
+"augroup pencil
+"  autocmd!
+"  autocmd FileType markdown,mkd,md call pencil#init({'wrap': 'soft'})
+"  autocmd FileType text            call pencil#init({'wrap': 'soft'})
+"augroup END
 
 " keep running glow: while true; do clear; date; echo; echo; echo; glow 2020-06-14-racial-inequality.md; sleep 2; done
 nnoremap <Leader>glow :!glow %<CR>
 
-
-function! VisualFindAndReplace()
-  :OverCommandLine%s/
-  :w
-endfunction
-function! VisualFindAndReplaceWithSelection() range
-  :'<,'>OverCommandLine s/
-  :w
-endfunction
-
-nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
-xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
 
 function! QuickfixToggle()
   if g:quickfix_is_open
