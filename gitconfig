@@ -9,6 +9,8 @@
   ls = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(red)%h%C(reset) %C(auto)%d%C(reset) %C(white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(cyan)%an%C(reset)'
   ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cgreen\\ [%an]" --decorate --numstat
   amend = commit --amend
+[init]
+  defaultBranch = main
 [push]
   default = simple
   followTags = true
