@@ -216,12 +216,7 @@ nnoremap <leader>gsp :!clear;git stash pop stash@{<space>
 nnoremap <Leader>nt :NERDTreeToggle<CR>
 nnoremap <Leader>nf :NERDTreeFind<CR>
 
-"nnoremap <Leader>foc :Goyo<CR>:SoftPencil<CR>
-"augroup pencil
-"  autocmd!
-"  autocmd FileType markdown,mkd,md call pencil#init({'wrap': 'soft'})
-"  autocmd FileType text            call pencil#init({'wrap': 'soft'})
-"augroup END
+noremap <Leader>foc :Goyo<CR>:SoftPencil<CR>
 
 " keep running glow: while true; do clear; date; echo; echo; echo; glow 2020-06-14-racial-inequality.md; sleep 2; done
 nnoremap <Leader>glow :!glow %<CR>
