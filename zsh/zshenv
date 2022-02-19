@@ -1,0 +1,10 @@
+# Add homebrew binaries
+export PATH="/usr/local/bin:$PATH"
+
+# Add my custom commands
+export PATH="$HOME/bin:$PATH"
+
+# Add current bin for easier rails dev
+export PATH="./bin:$PATH"
+
+export PATH="$HOME/.npm-packages/bin:$PATH"
