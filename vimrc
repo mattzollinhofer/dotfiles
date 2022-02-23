@@ -34,14 +34,14 @@ let g:fzf_history_dir = '~/.fzf-history'
 
 nnoremap zx zMzvzazOzz
 vnoremap zx zMzvzazOzz
-nnoremap zt zt:call Flash() <CR>
-vnoremap zt zt:call Flash() <CR>
-nnoremap zz zt:call Flash() <CR>
-vnoremap zz zt:call Flash() <CR>
-nnoremap zm zz:call Flash() <CR>
-vnoremap zm zz:call Flash() <CR>
-nnoremap zb zb:call Flash() <CR>
-vnoremap zb zb:call Flash() <CR>
+nnoremap zt zt
+vnoremap zt zt
+nnoremap zz zt
+vnoremap zz zt
+nnoremap zm zz
+vnoremap zm zz
+nnoremap zb zb
+vnoremap zb zb
 
 " Change tab left
 nnoremap gr gT
@@ -78,7 +78,7 @@ set splitbelow
 set splitright
 
 " Always use vertical diffs
-set diffopt+=vertical
+" set diffopt+=vertical
 
 set history=1000
 set undolevels=1000
@@ -158,7 +158,7 @@ set wildignore=*/log/*,*/tmp/*
 
 " Color scheme
 syntax enable
-set background=dark
+set background=light
 let g:solarized_termtrans = 1
 colorscheme solarized
 
@@ -179,11 +179,11 @@ nnoremap <leader>G :Git<space>
 nnoremap <leader>gst :Git<CR>
 nnoremap <leader>gg :Ggrep -i<space>
 nnoremap <leader>ag :Ag <space>
-nnoremap <leader>gp :Gpull<CR>
-nnoremap <leader>gpush :Gpush<space>
+nnoremap <leader>gp :Git pull<CR>
+nnoremap <leader>gpush :Git push<space>
 nnoremap <leader>gls :Commits<CR>
-nnoremap <leader>gdr :Git log -p<CR>
-nnoremap <leader>gdrf :Git log -p %<CR>
+nnoremap <leader>gdr :!clear; git log -p<CR>
+nnoremap <leader>gdrf :!clear; git log -p %<CR>
 nnoremap <leader>gsh :!clear;git show<space>
 nnoremap <leader>ga :!clear;git add -p %<CR>
 nnoremap <leader>gci :Git ci<CR>
@@ -205,14 +205,26 @@ nnoremap <leader>gm :Git merge --no-ff<space>
 nnoremap <leader>gd<space> :!clear;git diff -w<CR>
 nnoremap <leader>gd :!clear;git diff -w<CR>
 nnoremap <leader>gdd :!clear;git diff -w<CR>
-nnoremap <leader>gdf :Git diff -w %<CR>
-nnoremap <leader>gds :Git diff --staged<CR>
+nnoremap <leader>gdf :!clear;git diff -w %<CR>
+nnoremap <leader>gds :Git! diff --staged<CR>
 
 nnoremap <leader>gsl :!clear;git stash list<CR>
+nnoremap <leader>gsd :!clear;git stash show -p<CR>
 nnoremap <leader>gss :!clear;git stash save<space>
 nnoremap <leader>gsp :!clear;git stash pop stash@{<space>
 
+" Ale
+map <leader>at :ALEToggle<CR>
+
+" Pry
+nnoremap <leader>bb obinding.pry<ESC>
+nnoremap <leader>BB Obinding.pry<ESC>
+
+"TMux Nav
+" let g:tmux_navigator_no_mappings=1
+
 " NERDTree
+let g:NERDTreeWinPos = "right"
 nnoremap <Leader>nt :NERDTreeToggle<CR>
 nnoremap <Leader>nf :NERDTreeFind<CR>
 
