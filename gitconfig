@@ -1,7 +1,9 @@
 [alias]
   s = status
+  st = status
   co = checkout
   ci = commit
+  cp = cherry-pick
   p = pull
   d = diff
   br = branch
