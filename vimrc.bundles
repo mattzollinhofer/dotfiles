@@ -48,11 +48,12 @@ Plug 'vim-scripts/tComment'
 
 " Begin MJZ Custom
 Plug 'tpope/vim-unimpaired'
+Plug 'preservim/nerdtree'
 " End MJZ Custom
 
-if g:has_async
-  Plug 'dense-analysis/ale'
-endif
+"if g:has_async
+"  Plug 'dense-analysis/ale'
+"endif
 
 if filereadable(expand("~/.vimrc.bundles.local"))
   source ~/.vimrc.bundles.local
