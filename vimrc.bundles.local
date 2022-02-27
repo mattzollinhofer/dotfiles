@@ -1,11 +1,14 @@
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'stsewd/fzf-checkout.vim'
 
+Plug 'ianchanning/vim-selenized'
+Plug 'rakr/vim-one'
+
 "lightline statusbar
 Plug 'itchyny/lightline.vim'
 Plug 'niklaas/lightline-gitdiff'
 let g:lightline = {
-\   'colorscheme': 'wombat',
+\   'colorscheme': 'selenized_white',
 \   'active': {
 \     'left': [ [ 'gitbranch', 'paste' ],
 \               [ 'readonly', 'filename', 'modified'] ],

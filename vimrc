@@ -159,10 +159,11 @@ set wildignore=*/log/*,*/tmp/*
 " Color scheme
 syntax enable
 set background=light
-let g:solarized_termtrans = 1
-colorscheme solarized
 
+" set color column at 110 and gray
 set colorcolumn=110
+" run: ":so $VIMRUNTIME/syntax/colortest.vim" to find all vim colors available
+:hi ColorColumn ctermbg=gray guibg=blue
 
 " Open last file
 nnoremap <leader>ll <C-^>
