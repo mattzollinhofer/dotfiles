@@ -1,4 +1,3 @@
-Plug 'christoomey/vim-tmux-navigator'
 Plug 'stsewd/fzf-checkout.vim'
 
 Plug 'ianchanning/vim-selenized'
