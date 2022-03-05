@@ -32,6 +32,9 @@ set nofoldenable
 
 let g:fzf_history_dir = '~/.fzf-history'
 
+nnoremap <leader>sp :set paste!<CR>
+nnoremap <leader>sl :set nonumber!<CR>
+
 nnoremap zx zMzvzazOzz
 vnoremap zx zMzvzazOzz
 nnoremap zt zt
