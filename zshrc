@@ -1,3 +1,16 @@
+export ZPLUG_HOME=/opt/homebrew/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
+zplug 'mafredri/zsh-async'
+zplug 'sindresorhus/pure'
+
+zplug 'zsh-users/zsh-syntax-highlighting', defer:2
+zplug 'zsh-users/zsh-completions', defer:2
+zplug 'zsh-users/zsh-autosuggestions', defer:2
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+
+zplug load
+
 # load custom executable functions
 for function in ~/.zsh/functions/*; do
   source $function
@@ -39,3 +52,7 @@ _load_settings "$HOME/.zsh/configs"
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
+
+# . /opt/homebrew/opt/asdf/asdf.sh
+
+# . /opt/homebrew/opt/asdf/libexec/asdf.sh
