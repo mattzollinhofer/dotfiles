@@ -27,3 +27,6 @@
   editor = vim
 [include]
   path = ~/.gitconfig.local
+[user]
+	name = Matt Zollinhofer
+	email = matt.zollinhofer@gmail.com

@@ -1,3 +1,2 @@
-alias teachy='cd ~/dev/rails/teachy'
 alias dev='cd ~/dev/match_oracle'
-alias bookworm='cd ~/dev/rails/fundraising'
+alias mo='cd ~/dev/match_oracle-rework'

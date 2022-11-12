@@ -23,6 +23,9 @@ alias l='ll'
 alias c=clear
 alias hg='history | grep -i'
 
+alias talon='ssh tdev'
+alias tdev='ssh tdev'
+
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local
 
