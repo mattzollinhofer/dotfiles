@@ -164,9 +164,9 @@ syntax enable
 set background=light
 
 " set color column at 110 and gray
-set colorcolumn=110
+" set colorcolumn=110
 " run: ":so $VIMRUNTIME/syntax/colortest.vim" to find all vim colors available
-:hi ColorColumn ctermbg=gray guibg=blue
+" :hi ColorColumn ctermbg=gray guibg=blue
 
 " Open last file
 nnoremap <leader>ll <C-^>
@@ -210,7 +210,7 @@ nnoremap <leader>gd<space> :!clear;git diff -w<CR>
 nnoremap <leader>gd :!clear;git diff -w<CR>
 nnoremap <leader>gdd :!clear;git diff -w<CR>
 nnoremap <leader>gdf :!clear;git diff -w %<CR>
-nnoremap <leader>gds :Git! diff --staged<CR>
+nnoremap <leader>gds :!clear;git diff --staged<CR>
 
 nnoremap <leader>gsl :!clear;git stash list<CR>
 nnoremap <leader>gsd :!clear;git stash show -p<CR>
