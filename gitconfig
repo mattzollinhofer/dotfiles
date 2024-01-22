@@ -1,19 +1,25 @@
 [alias]
   s = status
   st = status
+  stat = show --stat
   co = checkout
+  rs = restore
   ci = commit
+  ca = commit --amend
   cp = cherry-pick
   p = pull
   d = diff
   br = branch
+  review = log -p
   ds = diff --staged
-  ls = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(red)%h%C(reset) %C(auto)%d%C(reset) %C(blue)%s%C(reset) %C(green)(%ar)%C(reset) - %C(cyan)%an%C(reset)'
+  ls = log --graph --abbrev-commit --date=relative --format=format:'%C(red)%h%C(reset) %C(auto)%d%C(reset) %C(blue)%s%C(reset) %C(green)(%ar)%C(reset) - %C(cyan)%<(8,trunc)%an%C(reset)'
   ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cgreen\\ [%an]" --decorate --numstat
+  hist = log --graph --color --pretty='%C(auto)%h %<|(70,mtrunc)%s (%an, %ar)%<(40,mtrunc)%d' --abbrev-commit
   amend = commit --amend
 [init]
   defaultBranch = main
 [push]
+  autoSetupRemote = true
   default = simple
   followTags = true
 [pull]
@@ -28,5 +34,5 @@
 [include]
   path = ~/.gitconfig.local
 [user]
-	name = Matt Zollinhofer
-	email = matt.zollinhofer@gmail.com
+  name = Matt Zollinhofer
+  email = matt.zollinhofer@gmail.com
