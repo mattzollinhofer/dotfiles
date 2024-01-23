@@ -1,0 +1,99 @@
+{
+  "terminal.integrated.copyOnSelection": true,
+  "git.autofetch": true,
+  "workbench.colorTheme": "Default Light+",
+  "redhat.telemetry.enabled": true,
+  "yaml.customTags": [
+    "!And",
+    "!And sequence",
+    "!If",
+    "!If sequence",
+    "!Not",
+    "!Not sequence",
+    "!Equals",
+    "!Equals sequence",
+    "!Or",
+    "!Or sequence",
+    "!FindInMap",
+    "!FindInMap sequence",
+    "!Base64",
+    "!Join",
+    "!Join sequence",
+    "!Cidr",
+    "!Ref",
+    "!Sub",
+    "!Sub sequence",
+    "!GetAtt",
+    "!GetAZs",
+    "!ImportValue",
+    "!ImportValue sequence",
+    "!Select",
+    "!Select sequence",
+    "!Split",
+    "!Split sequence"
+  ],
+  "aws.suppressPrompts": {
+    "yamlExtPrompt": true
+  },
+  "files.refactoring.autoSave": false,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "gitlens.advanced.externalDiffTool": "",
+  "files.autoSave": "afterDelay",
+  "editor.occurrencesHighlight": "off",
+  "editor.selectionHighlight": false,
+  "editor.guides.bracketPairs": true,
+  "aws.codeWhisperer.includeSuggestionsWithCodeReferences": false,
+  "vim.commandLineModeKeyBindings": [],
+  "vim.normalModeKeyBindings": [
+    {
+      "before": ["[", " "],
+      "after": ["O", "<Esc>", "j", "0"]
+    },
+    {
+      "before": ["]", " "],
+      "after": ["o", "<Esc>", "k", "0"]
+    },
+    {
+      "before": ["]", "e"],
+      "commands": ["editor.action.moveLinesDownAction"]
+    },
+    {
+      "before": ["[", "e"],
+      "commands": ["editor.action.moveLinesUpAction"]
+    }
+  ],
+  // "vim.insertModeKeyBindings": [
+  //   {
+  //     "before": ["j", "k"],
+  //     "after": ["<Esc>"]
+  //   }
+  // ],
+  // "vim.insertModeKeyBindingsNonRecursive": [
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "k"],
+      "commands": [
+        { "command": "workbench.action.files.save" },
+        { "command": "extension.vim_escape" }
+      ]
+    }
+  ],
+  "workbench.iconTheme": "vscode-icons",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "editor.formatOnSave": true,
+  "quokka.suppressGlyphMarginNotifications": false,
+  "quokka.syncSettings": false,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.minimap.enabled": false,
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "workbench.sideBar.location": "right",
+  "vsicons.dontShowNewVersionMessage": true
+}
