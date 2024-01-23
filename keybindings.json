@@ -1,0 +1,277 @@
+// Place your key bindings in this file to override the defaultsauto[]
+[
+  // ############ MISC
+  {
+    "key": "ctrl+a ctrl+m",
+    "command": "editor.action.toggleMinimap"
+  },
+
+  // ############ Navigation
+  {
+    "key": "shift+right",
+    "command": "workbench.action.increaseViewWidth"
+  },
+  {
+    "key": "shift+left",
+    "command": "workbench.action.decreaseViewWidth"
+  },
+  {
+    "key": "shift+up",
+    "command": "workbench.action.increaseViewHeight"
+  },
+  {
+    "key": "shift+down",
+    "command": "workbench.action.decreaseViewHeight"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.increaseViewWidth"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "workbench.action.decreaseViewWidth"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.increaseViewHeight"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.decreaseViewHeight"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.navigateUp"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.navigateDown"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.navigateLeft"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.navigateRight"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.navigateLeft"
+  },
+  // {
+  //   "key": "ctrl+h",
+  //   "command": "workbench.action.previousPanelView",
+  //   "when": "panelFocus"
+  // },
+  // {
+  //   "key": "ctrl+l",
+  //   "command": "workbench.action.nextPanelView",
+  //   "when": "panelFocus"
+  // },
+  {
+    "key": "ctrl+a ctrl+s",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "workbench.action.closeSidebar",
+        "workbench.action.closeAuxiliaryBar",
+        "workbench.action.closePanel"
+      ]
+    }
+  },
+  {
+    "key": "ctrl+a ctrl+a",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "workbench.action.togglePanel",
+        "workbench.action.toggleSidebarVisibility"
+        // "workbench.action.toggleAuxiliaryBar",
+      ]
+    }
+  },
+  {
+    "key": "ctrl+a ctrl+d",
+    "command": "runCommands",
+    "args": {
+      "commands": ["workbench.action.toggleMaximizedPanel"]
+    }
+  },
+  {
+    "key": "ctrl+w v",
+    "command": "workbench.action.splitEditor",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+w s",
+    "command": "workbench.action.splitEditorDown",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpen"
+  },
+  {
+    "key": "ctrl+shift+alt+m",
+    "command": "workbench.action.previousPanelView",
+    "when": "panelFocus"
+  },
+  {
+    "key": "shift+down",
+    "command": "workbench.action.terminal.resizePaneDown",
+    "foo": le
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "shift+left",
+    "command": "workbench.action.terminal.resizePaneLeft",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "shift+right",
+    "command": "workbench.action.terminal.resizePaneRight",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "shift+up",
+    "command": "workbench.action.terminal.resizePaneUp",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.terminal.resizePaneDown",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "workbench.action.terminal.resizePaneLeft",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.terminal.resizePaneRight",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.terminal.resizePaneUp",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  // {
+  //   "key": "ctrl+l",
+  //   "command": "workbench.action.terminal.focusNextPane",
+  //   "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  // },
+  // {
+  //   "key": "ctrl+l",
+  //   "command": "workbench.action.navigateRight"
+  // },
+  {
+    "key": "ctrl+cmd+h",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.terminal.focusPreviousPane",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+cmd+l",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus"
+  },
+  {
+    "key": "cmd+0",
+    "command": "workbench.action.zoomReset"
+  },
+  {
+    "key": "shift+cmd+a",
+    "command": "git.stageSelectedRanges",
+    "when": "isInDiffEditor && !operationInProgress"
+  },
+  {
+    "key": "cmd+k cmd+u",
+    "command": "git.unstageSelectedRanges",
+    "when": "isInDiffEditor && !operationInProgress"
+  },
+  {
+    "key": "cmd+k cmd+n",
+    "command": "workbench.action.compareEditor.nextChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "cmd+k cmd+p",
+    "command": "workbench.action.compareEditor.previousChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "cmd+k cmd+a",
+    "command": "git.stageSelectedRanges",
+    "when": "isInDiffEditor && !operationInProgress"
+  },
+
+  // ################## Removing default shortcuts
+  {
+    "key": "ctrl+cmd+left",
+    "command": "-workbench.action.moveEditorToPreviousGroup"
+  },
+  {
+    "key": "cmd+0",
+    "command": "-workbench.action.focusSideBar"
+  },
+  {
+    "key": "cmd+numpad0",
+    "command": "-workbench.action.zoomReset"
+  },
+  {
+    "key": "cmd+k cmd+n",
+    "command": "-git.unstageSelectedRanges",
+    "when": "isInDiffEditor && !operationInProgress"
+  },
+  {
+    "key": "cmd+k m",
+    "command": "-workbench.action.editor.changeLanguageMode",
+    "when": "!notebookEditorFocused"
+  },
+  {
+    "key": "shift+cmd+s",
+    "command": "-workbench.action.files.saveLocalFile",
+    "when": "remoteFileDialogVisible"
+  },
+  {
+    "key": "ctrl+shift+/",
+    "command": "editor.emmet.action.matchTag"
+  },
+  {
+    "key": "ctrl+tab",
+    "command": "editor.action.jumpToBracket",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+\\",
+    "command": "-editor.action.jumpToBracket",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+tab",
+    "command": "-workbench.action.quickOpenNavigateNextInEditorPicker",
+    "when": "inEditorsPicker && inQuickOpen"
+  },
+  {
+    "key": "ctrl+shift+tab",
+    "command": "-workbench.action.quickOpenNavigatePreviousInEditorPicker",
+    "when": "inEditorsPicker && inQuickOpen"
+  },
+  {
+    "key": "ctrl+tab",
+    "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+    "when": "!activeEditorGroupEmpty"
+  },
+  {
+    "key": "ctrl+shift+tab",
+    "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+    "when": "!activeEditorGroupEmpty"
+  }
+]
