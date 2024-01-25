@@ -120,7 +120,6 @@
   {
     "key": "shift+down",
     "command": "workbench.action.terminal.resizePaneDown",
-    "foo": le
     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
   {
