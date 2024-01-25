@@ -63,13 +63,6 @@
       "commands": ["editor.action.moveLinesUpAction"]
     }
   ],
-  // "vim.insertModeKeyBindings": [
-  //   {
-  //     "before": ["j", "k"],
-  //     "after": ["<Esc>"]
-  //   }
-  // ],
-  // "vim.insertModeKeyBindingsNonRecursive": [
   "vim.insertModeKeyBindings": [
     {
       "before": ["j", "k"],
