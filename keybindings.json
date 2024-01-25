@@ -95,6 +95,11 @@
     }
   },
   {
+    "key": "ctrl+a ctrl+v",
+    "command": "workbench.action.terminal.split",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
+  {
     "key": "ctrl+w v",
     "command": "workbench.action.splitEditor",
     "when": "editorFocus"
