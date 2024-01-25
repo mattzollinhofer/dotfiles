@@ -57,18 +57,14 @@
   },
   {
     "key": "ctrl+h",
-    "command": "workbench.action.navigateLeft"
+    "command": "workbench.action.terminal.focusPreviousPane",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
-  // {
-  //   "key": "ctrl+h",
-  //   "command": "workbench.action.previousPanelView",
-  //   "when": "panelFocus"
-  // },
-  // {
-  //   "key": "ctrl+l",
-  //   "command": "workbench.action.nextPanelView",
-  //   "when": "panelFocus"
-  // },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.terminal.focusNextPane",
+    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
+  },
   {
     "key": "ctrl+a ctrl+s",
     "command": "runCommands",
@@ -157,24 +153,10 @@
     "command": "workbench.action.terminal.resizePaneUp",
     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
-  // {
-  //   "key": "ctrl+l",
-  //   "command": "workbench.action.terminal.focusNextPane",
-  //   "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-  // },
-  // {
-  //   "key": "ctrl+l",
-  //   "command": "workbench.action.navigateRight"
-  // },
   {
     "key": "ctrl+cmd+h",
     "command": "workbench.action.terminal.focusPrevious",
     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus"
-  },
-  {
-    "key": "ctrl+h",
-    "command": "workbench.action.terminal.focusPreviousPane",
-    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
   {
     "key": "ctrl+cmd+l",
