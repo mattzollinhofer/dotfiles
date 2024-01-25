@@ -11,7 +11,6 @@ alias gl='clear; git ls'
 alias ga='clear; git add -p'
 alias gc='git ci'
 alias gca='clear; git ci --amend'
-alias hub=git
 alias gls="git ls | fzf --multi --reverse --preview 'git show {+2}'"
 
 alias psg="ps -ef | grep "
@@ -22,9 +21,6 @@ alias ll='ls -Alh'
 alias l='ll'
 alias c=clear
 alias hg='history | grep -i'
-
-alias talon='ssh tdev'
-alias tdev='ssh tdev'
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local
