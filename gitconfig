@@ -6,6 +6,7 @@
   rs = restore
   ci = commit
   ca = commit --amend
+  ane = commit --amend --no-edit
   cp = cherry-pick
   p = pull
   d = diff
