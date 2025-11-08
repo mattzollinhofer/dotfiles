@@ -1,0 +1,34 @@
+#!/bin/bash
+# Smooth pulse effect to highlight active pane when switching windows
+# Pulses the active pane background brighter then back to normal
+
+# Skip if only one pane or if zoomed
+pane_count=$(tmux display-message -p '#{window_panes}')
+is_zoomed=$(tmux display-message -p '#{window_zoomed_flag}')
+
+if [ "$pane_count" -eq 1 ] || [ "$is_zoomed" -eq 1 ]; then
+  exit 0
+fi
+
+# Set flag that nvim can read so it can pulse as well
+tmux set-option -g @window_switched 1
+
+original="#eff1f5"
+
+# Gradual steps brighter, then back to normal (0.5s total)
+steps=(
+  "#f5f7fb"  # slightly brighter
+  "#fafcfe"  # brighter
+  "#ffffff"  # brightest/white
+  "#fafcfe"  # back down
+  "#f5f7fb"  # back down
+  "$original" # original
+)
+
+for bg in "${steps[@]}"; do
+  tmux set -g window-active-style "fg=#4c4f69,bg=$bg"
+  sleep 0.0833  # 0.5 seconds total / 6 steps
+done
+
+# then reset the flag after
+tmux set-option -g @window_switched 0

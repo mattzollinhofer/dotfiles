@@ -1,0 +1,28 @@
+# Sensitive configuration files with tokens/secrets
+config/prr/config.toml
+config/shortcut-cli/config.json
+config/iterm2/sockets/
+config/atuin/
+
+# Generated/cache files
+config/.ruby-lsp/
+config/fzf/
+*.log
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Low-value auto-generated configs
+config/htop/
+config/btop/
+config/flameshot/
+config/aider/
+
+# Local overrides (allow users to have local configs not committed)
+*.local
+!aliases.local
