@@ -1,17 +1,44 @@
-alias vi=vim
-alias vv="vim ~/.vimrc"
+alias g=git
+alias vi=nvim
+alias vim=nvim
+alias nv=nvim
+alias v="nvim"
+alias vv="nvim ~/.config/nvim/init.lua"
 alias be='bundle exec'
 alias console='be pry -r ./config/environment.rb'
 
 alias d='git diff'
+alias ds='git diff --staged'
+alias dm='git diff origin/main..'
 alias s='git status'
 alias p='git pull'
-alias gls='git ls'
+alias fwl='git push --force-with-lease'
+alias gf='git fetch'
+alias gcf='git cf'
+alias gcl='git co -'
 alias gl='clear; git ls'
+alias gll='git ls origin/main..'
+alias gdm='git diff origin/main..'
+alias glg='lazygit'
 alias ga='clear; git add -p'
+alias gap='clear; git add -p'
 alias gc='git ci'
+alias gci='git ci'
+alias gcm='git ci -m'
+alias gcM='git fetch; git co main'
 alias gca='clear; git ci --amend'
+alias ca='clear; git ci --amend'
+alias gco='git co'
+alias gcb='git co -b'
 alias gls="git ls | fzf --multi --reverse --preview 'git show {+2}'"
+alias gcf="git br | fzf | xargs git checkout"
+alias gcz="git br | fzf | xargs git checkout"
+alias gbf="git br | fzf | xargs git checkout"
+alias gbz="git br | fzf | xargs git checkout"
+alias grM="git fetch; git rebase origin/main"
+alias gri="git fetch; git rebase -i "
+alias grii="git fetch; git rebase -i HEAD~~~"
+alias griM="git fetch; git rebase -i origin/main"
 
 alias psg="ps -ef | grep "
 alias ln='ln -v'
@@ -21,6 +48,33 @@ alias ll='ls -Alh'
 alias l='ll'
 alias c=clear
 alias hg='history | grep -i'
+alias rc='rails console'
+
+alias sz='source ~/.zshrc'
+alias sa='source ~/.aliases'
+alias cc='claude'
+alias todo='cd ~/alfred/todos'
+alias mfa='~/code/playbook/bin/aws-perform-mfa $(rbw totp https://us-east-2.signin.aws.amazon.com)'
+# alias mfa='~/code/playbook/bin/aws-perform-mfa $(bw get totp amazon.com)'
+
+
+# expect something like "whs-zz-sc-41005-update--4clxms" after that
+alias review_app_console='heroku run rails c -a '
+
+alias cxs='cx-rails-console crm-staging'
+alias cxp='cx-rails-console crm-production '
+
+alias network_stability_check="stdbuf -oL ping 8.8.8.8 | stdbuf -oL cut -d'=' -f4 | cut -d' ' -f1"
+
+watchexec_welcomehome() {
+  if [[ -n "$1" && "$1" != "V" ]]; then
+    watchexec -c clear -d 100 -w app -w test -w bin -w config -w lib -w spec rails test $@
+  else
+    echo "Specify a path!" >&2
+  fi
+}
+alias wrt=watchexec_welcomehome
+alias truncate='gtruncate'
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

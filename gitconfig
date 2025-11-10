@@ -2,13 +2,18 @@
   s = status
   st = status
   stat = show --stat
+  checkout-fuzzy = "!git br | fzf | xargs git checkout"
+  cf = checkout-fuzzy
+  cf = checkout-fuzzy
   co = checkout
   rs = restore
   ci = commit
+  cm = commit -m
   ca = commit --amend
   ane = commit --amend --no-edit
   cp = cherry-pick
   p = pull
+  fwl = push --force-with-lease
   d = diff
   br = branch
   review = log -p
@@ -17,23 +22,41 @@
   ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cgreen\\ [%an]" --decorate --numstat
   hist = log --graph --color --pretty='%C(auto)%h %<|(70,mtrunc)%s (%an, %ar)%<(40,mtrunc)%d' --abbrev-commit
   amend = commit --amend
+  deploy-notes = log --pretty=format:'*%s* (%h)%n%n%b%n'
+  z = recent
+
+  others-branches = !git branch | grep -v "z[/-]" | egrep '[a-z]{2,4}[/-]|[0-9]{3,}'
+  delete-others-branches = !git others-branches | xargs git branch --delete --force
 [init]
   defaultBranch = main
+[gc]
+  auto = 1
+[merge]
+  ff = only
+  summary = true
 [push]
-  autoSetupRemote = true
-  default = simple
+  autoSetupRemote = false
+  default = current
   followTags = true
 [pull]
   rebase = true
 [fetch]
   prune = true
+[rerere]
+  enabled = true
+  autoupdate = true
 [rebase]
   autoSquash = true
   autoStash = true
+[branch]
+  autoSetupMerge = always
+[remote]
+  pushDefault = origin
 [core]
-  editor = vim
+  editor = nvim
+  excludesfile = ~/.gitignore_global
 [include]
   path = ~/.gitconfig.local
 [user]
-  name = Matt Zollinhofer
-  email = matt.zollinhofer@gmail.com
+  name = Z
+  email = mattz@hey.com

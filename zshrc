@@ -1,58 +1,51 @@
-export ZPLUG_HOME=/opt/homebrew/opt/zplug
-source $ZPLUG_HOME/init.zsh
+# --- completions ---
+# Homebrew’s zsh completions
+fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
-zplug 'mafredri/zsh-async'
-zplug 'sindresorhus/pure'
+autoload -Uz compinit
+compinit
+# (optional niceties)
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
-zplug 'zsh-users/zsh-syntax-highlighting', defer:2
-zplug 'zsh-users/zsh-completions', defer:2
-zplug 'zsh-users/zsh-autosuggestions', defer:2
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 
-zplug load
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
-# load custom executable functions
-for function in ~/.zsh/functions/*; do
-  source $function
-done
+PATH=$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$(brew --prefix)/opt/coreutils/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:$HOME/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin/:$HOME/code/welcomehome/bin:~/code/playbook/bin:~/code/playbook/contrib:$PATH
 
-# extra files in ~/.zsh/configs/pre , ~/.zsh/configs , and ~/.zsh/configs/post
-# these are loaded first, second, and third, respectively.
-_load_settings() {
-  _dir="$1"
-  if [ -d "$_dir" ]; then
-    if [ -d "$_dir/pre" ]; then
-      for config in "$_dir"/pre/**/*~*.zwc(N-.); do
-        . $config
-      done
-    fi
+export BASH_ENV=~/.bash_env
+export XDG_CONFIG_HOME="$HOME/.config"
 
-    for config in "$_dir"/**/*(N-.); do
-      case "$config" in
-        "$_dir"/(pre|post)/*|*.zwc)
-          :
-          ;;
-        *)
-          . $config
-          ;;
-      esac
-    done
+# Load secrets (API tokens, credentials)
+[[ -f ~/.secrets ]] && source ~/.secrets
 
-    if [ -d "$_dir/post" ]; then
-      for config in "$_dir"/post/**/*~*.zwc(N-.); do
-        . $config
-      done
-    fi
-  fi
-}
-_load_settings "$HOME/.zsh/configs"
+# fzf
+# catppuccin for fzf
+export FZF_DEFAULT_OPTS=" \
+  --color=bg+:#ccd0da,bg:#eff1f5,spinner:#dc8a78,hl:#d20f39 \
+  --color=fg:#4c4f69,header:#d20f39,info:#8839ef,pointer:#dc8a78 \
+  --color=marker:#dc8a78,fg+:#4c4f69,prompt:#8839ef,hl+:#d20f39"
+source <(fzf --zsh)
+source ~/.fzf-git/fzf-git.sh
 
-# Local config
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+eval "$(mise activate bash)"
+eval "$(atuin init zsh --disable-up-arrow)"
+
+source "$(brew --prefix)"/share/powerlevel10k/powerlevel10k.zsh-theme
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh   # auto-generated config, if present
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
 
-# . /opt/homebrew/opt/asdf/asdf.sh
 
-# . /opt/homebrew/opt/asdf/libexec/asdf.sh
+export COLORTERM=truecolor
+export OLLAMA_API_BASE="http://localhost:11434"
+
+export EDITOR="nvim"
+export VISUAL="nvim"
+export GIT_EDITOR="nvim"
