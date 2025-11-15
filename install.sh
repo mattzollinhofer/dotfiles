@@ -69,6 +69,14 @@ done
 echo ""
 echo "Installing Homebrew packages..."
 if command -v brew &>/dev/null; then
+    # Install GNU grep first (required by this script if bash_env alias is active)
+    if ! brew list grep &>/dev/null; then
+        echo "Installing grep..."
+        brew install grep
+    else
+        echo "grep already installed"
+    fi
+
     # Define packages and casks to install
     PACKAGES=(
         "powerlevel10k"
