@@ -116,9 +116,44 @@ if command -v brew &>/dev/null; then
     else
         echo "watchexec already installed"
     fi
+
+    # Install fd (required by nvim Telescope)
+    if ! brew list fd &>/dev/null; then
+        echo "Installing fd..."
+        brew install fd
+    else
+        echo "fd already installed"
+    fi
+
+    # Install ripgrep (required by nvim Telescope)
+    if ! brew list ripgrep &>/dev/null; then
+        echo "Installing ripgrep..."
+        brew install ripgrep
+    else
+        echo "ripgrep already installed"
+    fi
+
+    # Install universal-ctags (required by nvim gutentags)
+    if ! brew list universal-ctags &>/dev/null; then
+        echo "Installing universal-ctags..."
+        brew install universal-ctags
+    else
+        echo "universal-ctags already installed"
+    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
+fi
+
+# Check for Xcode Command Line Tools
+echo ""
+if ! command -v make &>/dev/null; then
+    echo "=========================================="
+    echo "⚠️  WARNING: Xcode Command Line Tools Missing"
+    echo "=========================================="
+    echo "Neovim's Telescope plugin requires 'make' to build."
+    echo "Install with: xcode-select --install"
+    echo "=========================================="
 fi
 
 # Clone fzf-git if not present
