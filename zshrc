@@ -31,7 +31,7 @@ export FZF_DEFAULT_OPTS=" \
   --color=fg:#4c4f69,header:#d20f39,info:#8839ef,pointer:#dc8a78 \
   --color=marker:#dc8a78,fg+:#4c4f69,prompt:#8839ef,hl+:#d20f39"
 source <(fzf --zsh)
-source ~/.fzf-git/fzf-git.sh
+[[ -f ~/.fzf-git/fzf-git.sh ]] && source ~/.fzf-git/fzf-git.sh
 
 eval "$(mise activate bash)"
 eval "$(atuin init zsh --disable-up-arrow)"

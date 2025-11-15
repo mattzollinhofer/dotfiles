@@ -65,6 +65,15 @@ for file in zshrc aliases aliases.local gitconfig gemrc bash_env gitignore_globa
     fi
 done
 
+# Clone fzf-git if not present
+echo ""
+if [ ! -d "$HOME/.fzf-git" ]; then
+    echo "Cloning fzf-git.sh..."
+    git clone https://github.com/junegunn/fzf-git.sh.git "$HOME/.fzf-git"
+else
+    echo "fzf-git.sh already installed"
+fi
+
 echo ""
 echo "Done! Dotfiles installed."
 echo "Note: Some configs (prr, shortcut-cli, atuin, iterm2) are excluded for security."
