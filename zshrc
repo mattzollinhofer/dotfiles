@@ -33,8 +33,8 @@ export FZF_DEFAULT_OPTS=" \
 source <(fzf --zsh)
 [[ -f ~/.fzf-git/fzf-git.sh ]] && source ~/.fzf-git/fzf-git.sh
 
-eval "$(mise activate bash)"
-eval "$(atuin init zsh --disable-up-arrow)"
+command -v mise &>/dev/null && eval "$(mise activate bash)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 source "$(brew --prefix)"/share/powerlevel10k/powerlevel10k.zsh-theme
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh   # auto-generated config, if present
