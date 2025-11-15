@@ -138,7 +138,6 @@
                     }
                 ]
             },
-            "devices": [],
             "name": "Default profile",
             "selected": true,
             "simple_modifications": [
