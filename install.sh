@@ -164,14 +164,6 @@ if command -v brew &>/dev/null; then
     else
         echo "gh already installed"
     fi
-
-    # Install rubocop (Ruby linter/formatter for nvim)
-    if ! brew list rubocop &>/dev/null; then
-        echo "Installing rubocop..."
-        brew install rubocop
-    else
-        echo "rubocop already installed"
-    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
