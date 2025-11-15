@@ -15,3 +15,6 @@ export PATH="$HOME/bin:$PATH"
 export PATH="./bin:$PATH"
 
 export PATH="$HOME/.npm-packages/bin:$PATH"
+
+# Activate mise for all shell types (interactive, non-interactive, login, non-login)
+command -v mise &>/dev/null && eval "$(mise activate zsh)"

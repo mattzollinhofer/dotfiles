@@ -1,5 +1,12 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # --- completions ---
-# Homebrew’s zsh completions
+# Homebrew's zsh completions
 fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
 autoload -Uz compinit
@@ -7,14 +14,6 @@ compinit
 # (optional niceties)
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 PATH=$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$(brew --prefix)/opt/coreutils/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/opt/libpq/bin:/usr/local/bin/:$HOME/code/welcomehome/bin:~/code/playbook/bin:~/code/playbook/contrib:$PATH
 
@@ -33,7 +32,7 @@ export FZF_DEFAULT_OPTS=" \
 source <(fzf --zsh)
 [[ -f ~/.fzf-git/fzf-git.sh ]] && source ~/.fzf-git/fzf-git.sh
 
-command -v mise &>/dev/null && eval "$(mise activate bash)"
+command -v mise &>/dev/null && eval "$(mise activate zsh)"
 command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 # Load powerlevel10k theme if available
