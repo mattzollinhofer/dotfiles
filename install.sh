@@ -164,6 +164,14 @@ if command -v brew &>/dev/null; then
     else
         echo "gh already installed"
     fi
+
+    # Install rubocop (Ruby linter/formatter for nvim)
+    if ! brew list rubocop &>/dev/null; then
+        echo "Installing rubocop..."
+        brew install rubocop
+    else
+        echo "rubocop already installed"
+    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
@@ -207,4 +215,15 @@ echo "Terminal.app:"
 echo "  1. Open Preferences (Cmd + ,)"
 echo "  2. Go to Profiles → Font → Change"
 echo "  3. Search for 'MesloLGS' and select 'MesloLGS Nerd Font Mono'"
+echo "=========================================="
+echo ""
+echo "=========================================="
+echo "⚠️  OPTIONAL - Ruby LSP Setup"
+echo "=========================================="
+echo "For full nvim LSP support in Ruby projects, install ruby-lsp:"
+echo ""
+echo "  gem install ruby-lsp"
+echo ""
+echo "Or add to your project's Gemfile (recommended):"
+echo "  gem 'ruby-lsp', require: false"
 echo "=========================================="
