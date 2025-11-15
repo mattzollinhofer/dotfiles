@@ -53,17 +53,24 @@ Then edit `~/.secrets` and add your actual API tokens and machine-specific paths
 Install required tools:
 - `nvim` - editor
 - `tmux` - terminal multiplexer
-- `mise` - dev environment manager
+- `mise` - dev environment manager (optional, can use asdf instead)
+- `atuin` - shell history sync (optional)
 - GNU coreutils (ggrep, gdate, gawk) - `brew install coreutils gawk`
 - `fzf` - fuzzy finder
 - `gh` - GitHub CLI
-- `powerlevel10k` - zsh theme (installed automatically by install.sh)
 
-### 3. Font (Optional)
-Install a Nerd Font for proper icon rendering in nvim:
-```bash
-brew install --cask font-meslo-lg-nerd-font
-```
+**Automatically installed by install.sh:**
+- `powerlevel10k` - zsh theme
+- `font-meslo-lg-nerd-font` - Meslo LG Nerd Font (p10k recommended font)
+
+### 3. Font Setup
+The install script automatically installs **Meslo LG Nerd Font**, which is the recommended font for powerlevel10k. After installation:
+
+1. Set your terminal font to "MesloLGS NF" (any variant: Regular, Bold, etc.)
+2. In iTerm2: Preferences → Profiles → Text → Font
+3. In Terminal.app: Preferences → Profiles → Font
+
+This font provides proper icon rendering for both the shell prompt and nvim.
 
 ## Security
 

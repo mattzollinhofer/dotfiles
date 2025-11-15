@@ -76,6 +76,14 @@ if command -v brew &>/dev/null; then
     else
         echo "powerlevel10k already installed"
     fi
+
+    # Install Meslo Nerd Font
+    if ! brew list --cask font-meslo-lg-nerd-font &>/dev/null; then
+        echo "Installing Meslo LG Nerd Font..."
+        brew install --cask font-meslo-lg-nerd-font
+    else
+        echo "Meslo LG Nerd Font already installed"
+    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
