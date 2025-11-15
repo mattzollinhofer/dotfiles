@@ -1,2 +1,9 @@
 alias dev='cd ~/dev/match_oracle'
 alias mo='cd ~/dev/match_oracle-rework'
+
+# Personal aliases with hardcoded paths (customize for your system)
+alias todo='cd ~/alfred/todos'
+alias mfa='~/code/playbook/bin/aws-perform-mfa $(rbw totp https://us-east-2.signin.aws.amazon.com)'
+alias review_app_console='heroku run rails c -a '
+alias cxs='cx-rails-console crm-staging'
+alias cxp='cx-rails-console crm-production '

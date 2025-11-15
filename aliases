@@ -53,16 +53,14 @@ alias rc='rails console'
 alias sz='source ~/.zshrc'
 alias sa='source ~/.aliases'
 alias cc='claude'
-alias todo='cd ~/alfred/todos'
-alias mfa='~/code/playbook/bin/aws-perform-mfa $(rbw totp https://us-east-2.signin.aws.amazon.com)'
-# alias mfa='~/code/playbook/bin/aws-perform-mfa $(bw get totp amazon.com)'
 
-
-# expect something like "whs-zz-sc-41005-update--4clxms" after that
-alias review_app_console='heroku run rails c -a '
-
-alias cxs='cx-rails-console crm-staging'
-alias cxp='cx-rails-console crm-production '
+# Personal/machine-specific aliases moved to ~/.aliases.local
+# Uncomment and customize in your .aliases.local file:
+# alias todo='cd ~/alfred/todos'
+# alias mfa='~/code/playbook/bin/aws-perform-mfa $(rbw totp https://us-east-2.signin.aws.amazon.com)'
+# alias review_app_console='heroku run rails c -a '
+# alias cxs='cx-rails-console crm-staging'
+# alias cxp='cx-rails-console crm-production '
 
 alias network_stability_check="stdbuf -oL ping 8.8.8.8 | stdbuf -oL cut -d'=' -f4 | cut -d' ' -f1"
 
