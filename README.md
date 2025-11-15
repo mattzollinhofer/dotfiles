@@ -52,15 +52,15 @@ Then edit `~/.secrets` and add your actual API tokens and machine-specific paths
 ### 2. Dependencies
 
 **Manual install required:**
-- `tmux` - terminal multiplexer - `brew install tmux`
 - `mise` - dev environment manager (optional, can use asdf instead) - `brew install mise`
-- `atuin` - shell history sync (optional) - `brew install atuin`
 - GNU coreutils - `brew install coreutils gawk`
-- `gh` - GitHub CLI - `brew install gh`
 - Xcode Command Line Tools (provides `make`, `git`) - `xcode-select --install`
 
 **Automatically installed by install.sh:**
 - `neovim` - editor
+- `tmux` - terminal multiplexer
+- `gh` - GitHub CLI
+- `atuin` - shell history sync (optional)
 - `powerlevel10k` - zsh theme
 - `font-meslo-lg-nerd-font` - Meslo LG Nerd Font (p10k recommended font)
 - `fzf` - fuzzy finder (required by shell aliases and zsh)

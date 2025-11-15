@@ -140,6 +140,30 @@ if command -v brew &>/dev/null; then
     else
         echo "universal-ctags already installed"
     fi
+
+    # Install tmux (terminal multiplexer)
+    if ! brew list tmux &>/dev/null; then
+        echo "Installing tmux..."
+        brew install tmux
+    else
+        echo "tmux already installed"
+    fi
+
+    # Install atuin (shell history sync, optional)
+    if ! brew list atuin &>/dev/null; then
+        echo "Installing atuin..."
+        brew install atuin
+    else
+        echo "atuin already installed"
+    fi
+
+    # Install gh (GitHub CLI)
+    if ! brew list gh &>/dev/null; then
+        echo "Installing gh..."
+        brew install gh
+    else
+        echo "gh already installed"
+    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
