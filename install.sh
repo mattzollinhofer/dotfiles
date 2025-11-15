@@ -59,7 +59,7 @@ done
 # Symlink shell configs from root
 echo ""
 echo "Setting up shell config symlinks..."
-for file in zshrc aliases aliases.local gitconfig gemrc bash_env gitignore_global p10k.zsh; do
+for file in zshrc aliases aliases.local gitconfig gemrc bash_env gitignore_global p10k.zsh tmux.conf; do
     if [ -f "$DOTFILES_DIR/$file" ]; then
         create_symlink "$DOTFILES_DIR/$file" "$HOME/.$file"
     fi
@@ -91,6 +91,30 @@ if command -v brew &>/dev/null; then
         brew install neovim
     else
         echo "neovim already installed"
+    fi
+
+    # Install fzf (required by shell aliases)
+    if ! brew list fzf &>/dev/null; then
+        echo "Installing fzf..."
+        brew install fzf
+    else
+        echo "fzf already installed"
+    fi
+
+    # Install lazygit (required by glg alias)
+    if ! brew list lazygit &>/dev/null; then
+        echo "Installing lazygit..."
+        brew install lazygit
+    else
+        echo "lazygit already installed"
+    fi
+
+    # Install watchexec (required by wrt alias)
+    if ! brew list watchexec &>/dev/null; then
+        echo "Installing watchexec..."
+        brew install watchexec
+    else
+        echo "watchexec already installed"
     fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
