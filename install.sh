@@ -59,7 +59,7 @@ done
 # Symlink shell configs from root
 echo ""
 echo "Setting up shell config symlinks..."
-for file in zshrc aliases aliases.local gitconfig gemrc; do
+for file in zshrc aliases aliases.local gitconfig gemrc bash_env gitignore_global; do
     if [ -f "$DOTFILES_DIR/$file" ]; then
         create_symlink "$DOTFILES_DIR/$file" "$HOME/.$file"
     fi
