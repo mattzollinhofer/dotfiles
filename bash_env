@@ -3,4 +3,4 @@ shopt -s expand_aliases
 # Use GNU tools instead of mac defaults
 alias grep='ggrep'
 alias date='gdate'
-alias awk='/opt/homebrew/bin/gawk'
+alias awk='$(brew --prefix)/bin/gawk'
