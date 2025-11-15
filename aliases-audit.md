@@ -14,13 +14,13 @@
 
 **fzf** - Required for fuzzy finding
 - Lines 33-37: gls, gcf, gcz, gbf, gbz (fuzzy checkout)
-- Status: NOT in install.sh, NOT documented as required ❌
-- Impact: 5 aliases break silently
+- Status: Auto-installed by install.sh ✅
+- Impact: 5 aliases depend on it
 
 **lazygit** - Required
 - Line 22: glg alias
-- Status: NOT in install.sh, only config present ❌
-- Impact: Alias fails
+- Status: Auto-installed by install.sh ✅
+- Impact: 1 alias depends on it
 
 **grep** - Required (but system default ok)
 - Lines 43, 50: psg, hg aliases
@@ -42,7 +42,7 @@
 
 **watchexec**
 - Lines 69-76: wrt alias/function
-- Status: NOT documented, NOT in install.sh ❌
+- Status: Auto-installed by install.sh ✅
 
 **rbw** (Bitwarden CLI for mfa alias)
 - Line 57: mfa alias
