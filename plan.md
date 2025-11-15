@@ -55,15 +55,19 @@ configuration files in the dotfiles repository to identify:
 - [ ] Any extensions that need separate install?
 
 ### 7. Mise (`config/mise/`)
-- [ ] Check config.toml for tool installations
-- [ ] Document which tools mise manages vs manual install
+- [x] Check config.toml for tool installations - Manages Node 20.11.1, Ruby 3.3.0
+- [x] Document which tools mise manages vs manual install - mise/asdf are equivalent and interchangeable
+- [x] Note: zshrc only conditionally activates mise, NOT asdf - need to add asdf support
 
 ### 8. Shell Configs
-- [ ] `zshrc` - already checked, but verify:
+- [x] `zshrc` - verified:
   - All sourced files exist or have conditional checks
-  - All tools have conditional activation
+  - All tools have conditional activation (mise, atuin, fzf)
   - PATH modifications reference portable locations
-- [ ] `aliases` - check for commands that assume tools exist
+  - Missing: asdf support (only checks for mise)
+- [x] `aliases` - Audited tool dependencies:
+  - All required tools already in install.sh (nvim, lazygit, fzf, watchexec)
+  - One GNU tool: gtruncate (line 75) - already documented in README
 - [ ] `bash_env` - GNU tools documented in README?
 
 ### 9. Other Configs
