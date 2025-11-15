@@ -1,3 +1,4 @@
 .overcommit.yml
 .secrets
 .netrc
+.ff-pins
