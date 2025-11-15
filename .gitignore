@@ -7,6 +7,7 @@ config/atuin/
 # Generated/cache files
 config/.ruby-lsp/
 config/fzf/
+config/karabiner/automatic_backups/
 *.log
 *.swp
 *.swo
