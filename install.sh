@@ -69,100 +69,59 @@ done
 echo ""
 echo "Installing Homebrew packages..."
 if command -v brew &>/dev/null; then
-    # Install powerlevel10k theme
-    if ! brew list powerlevel10k &>/dev/null; then
-        echo "Installing powerlevel10k..."
-        brew install powerlevel10k
-    else
-        echo "powerlevel10k already installed"
+    # Define packages and casks to install
+    PACKAGES=(
+        "powerlevel10k"
+        "neovim"
+        "fzf"
+        "lazygit"
+        "watchexec"
+        "fd"
+        "ripgrep"
+        "universal-ctags"
+        "tmux"
+        "atuin"
+        "gh"
+    )
+
+    CASKS=(
+        "font-meslo-lg-nerd-font"
+    )
+
+    # Get list of installed packages once
+    INSTALLED_PACKAGES=$(brew list --formula -1)
+    INSTALLED_CASKS=$(brew list --cask -1)
+
+    # Check regular packages
+    TO_INSTALL=()
+    for pkg in "${PACKAGES[@]}"; do
+        if ! echo "$INSTALLED_PACKAGES" | grep -q "^${pkg}$"; then
+            TO_INSTALL+=("$pkg")
+        else
+            echo "$pkg already installed"
+        fi
+    done
+
+    # Install missing packages in one command
+    if [ ${#TO_INSTALL[@]} -gt 0 ]; then
+        echo "Installing packages: ${TO_INSTALL[*]}"
+        brew install "${TO_INSTALL[@]}"
     fi
 
-    # Install Meslo Nerd Font
-    if ! brew list --cask font-meslo-lg-nerd-font &>/dev/null; then
-        echo "Installing Meslo LG Nerd Font..."
-        brew install --cask font-meslo-lg-nerd-font
-    else
-        echo "Meslo LG Nerd Font already installed"
-    fi
+    # Check casks
+    TO_INSTALL_CASKS=()
+    for cask in "${CASKS[@]}"; do
+        if ! echo "$INSTALLED_CASKS" | grep -q "^${cask}$"; then
+            TO_INSTALL_CASKS+=("$cask")
+        else
+            echo "$cask already installed"
+        fi
+    done
 
-    # Install neovim
-    if ! brew list neovim &>/dev/null; then
-        echo "Installing neovim..."
-        brew install neovim
-    else
-        echo "neovim already installed"
-    fi
-
-    # Install fzf (required by shell aliases)
-    if ! brew list fzf &>/dev/null; then
-        echo "Installing fzf..."
-        brew install fzf
-    else
-        echo "fzf already installed"
-    fi
-
-    # Install lazygit (required by glg alias)
-    if ! brew list lazygit &>/dev/null; then
-        echo "Installing lazygit..."
-        brew install lazygit
-    else
-        echo "lazygit already installed"
-    fi
-
-    # Install watchexec (required by wrt alias)
-    if ! brew list watchexec &>/dev/null; then
-        echo "Installing watchexec..."
-        brew install watchexec
-    else
-        echo "watchexec already installed"
-    fi
-
-    # Install fd (required by nvim Telescope)
-    if ! brew list fd &>/dev/null; then
-        echo "Installing fd..."
-        brew install fd
-    else
-        echo "fd already installed"
-    fi
-
-    # Install ripgrep (required by nvim Telescope)
-    if ! brew list ripgrep &>/dev/null; then
-        echo "Installing ripgrep..."
-        brew install ripgrep
-    else
-        echo "ripgrep already installed"
-    fi
-
-    # Install universal-ctags (required by nvim gutentags)
-    if ! brew list universal-ctags &>/dev/null; then
-        echo "Installing universal-ctags..."
-        brew install universal-ctags
-    else
-        echo "universal-ctags already installed"
-    fi
-
-    # Install tmux (terminal multiplexer)
-    if ! brew list tmux &>/dev/null; then
-        echo "Installing tmux..."
-        brew install tmux
-    else
-        echo "tmux already installed"
-    fi
-
-    # Install atuin (shell history sync, optional)
-    if ! brew list atuin &>/dev/null; then
-        echo "Installing atuin..."
-        brew install atuin
-    else
-        echo "atuin already installed"
-    fi
-
-    # Install gh (GitHub CLI)
-    if ! brew list gh &>/dev/null; then
-        echo "Installing gh..."
-        brew install gh
-    else
-        echo "gh already installed"
+    # Install missing casks in one command
+    if [ ${#TO_INSTALL_CASKS[@]} -gt 0 ]; then
+        echo "Installing casks: ${TO_INSTALL_CASKS[*]}"
+        brew install --cask "${TO_INSTALL_CASKS[@]}"
     fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
