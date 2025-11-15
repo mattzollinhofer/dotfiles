@@ -64,13 +64,23 @@ Install required tools:
 - `font-meslo-lg-nerd-font` - Meslo LG Nerd Font (p10k recommended font)
 
 ### 3. Font Setup
-The install script automatically installs **Meslo LG Nerd Font**, which is the recommended font for powerlevel10k. After installation:
+The install script automatically installs **Meslo LG Nerd Font**, which is the recommended font for powerlevel10k. After installation, you must manually configure your terminal to use it:
 
-1. Set your terminal font to "MesloLGS NF" (any variant: Regular, Bold, etc.)
-2. In iTerm2: Preferences → Profiles → Text → Font
-3. In Terminal.app: Preferences → Profiles → Font
+**iTerm2:**
+1. Open Preferences (Cmd + ,)
+2. Go to Profiles → Text → Font
+3. Click the font dropdown and search for "meslo"
+4. Select **"MesloLGS Nerd Font Mono"** (size 12-14 recommended)
+   - Note: Choose "Mono" variant, not "Propo"
+   - LGS (Small line height) is the recommended variant
 
-This font provides proper icon rendering for both the shell prompt and nvim.
+**Terminal.app:**
+1. Open Preferences (Cmd + ,)
+2. Go to Profiles → Font → Change
+3. Search for "MesloLGS"
+4. Select **"MesloLGS Nerd Font Mono"**
+
+This font provides proper icon rendering for both the shell prompt and nvim. Without it, you'll see box characters (□) instead of icons.
 
 ## Security
 
