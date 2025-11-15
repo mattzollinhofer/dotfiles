@@ -1,7 +1,7 @@
 # Dotfiles Portability Audit Plan
 
-## Objective
-Comprehensively audit all configuration files in the dotfiles repository to identify:
+## Objective Comprehensively update our dotfiles. We'll need to audit all
+configuration files in the dotfiles repository to identify:
 - Missing dependencies and installation steps
 - Secondary config files we may have overlooked
 - Hardcoded paths or non-portable configurations
@@ -11,22 +11,30 @@ Comprehensively audit all configuration files in the dotfiles repository to iden
 ## Tools/Configs to Audit
 
 ### 1. Neovim (`config/nvim/`)
-- [ ] Check `init.lua` for:
-  - Plugin manager (lazy.nvim) - does it auto-bootstrap?
-  - LSP servers referenced (need Mason or manual install?)
-  - External binaries (ripgrep, fd, etc.)
-  - Treesitter parsers
-  - Any hardcoded paths beyond what we fixed
-  - Custom Lua modules in `lua/` directory
-- [ ] Check `lazy-lock.json` - are all plugins portable?
-- [ ] Check `after/ftplugin/` for language-specific deps
-- [ ] Custom snippets in `lua/snippets/` - any dependencies?
+- [x] Check `init.lua` for:
+  - [x] Plugin manager (lazy.nvim) - Auto-bootstraps on first run (lines 13-21)
+  - [x] LSP servers - `ruby-lsp` (line 670) requires `gem install ruby-lsp`
+  - [x] External binaries required:
+    - `fd` (line 400) - Telescope file finder
+    - `ripgrep` - Telescope live_grep
+    - `git` - Fugitive, gitsigns, telescope
+    - `rubocop` (line 1202) - Ruby auto-format
+    - `make` (line 386) - telescope-fzf-native build
+    - `npm` (line 850) - markdown-preview build
+  - [x] Treesitter parsers - Auto-installed via `:TSUpdate` (lines 607-619)
+  - [x] Hardcoded paths - `~/working-notes` (995), `~/code/playbook` (998) are user-specific
+  - [x] Custom Lua modules - `ff_pins.lua` (depends on `fd` or `find`, uses `git`)
+- [x] Check `lazy-lock.json` - Exists, plugins are portable
+- [x] Check `after/ftplugin/` - Only `ruby.vim` with simple keybind, no deps
+- [x] Custom snippets - `ruby.lua` uses LuaSnip, no external deps
 
-### 2. Tmux (`config/tmux/`)
-- [ ] Check for plugin manager (tpm) references
-- [ ] Custom scripts in `scripts/` directory
-- [ ] External binary dependencies
-- [ ] Hardcoded paths
+### 2. Tmux (`tmux.conf` at root)
+- [x] Added to install.sh symlinks
+- [x] Removed deprecated `bell-on-alert` option for tmux 3.x compatibility
+- [x] Check for plugin manager (tpm) references - No tpm used
+- [x] Custom scripts in `scripts/` directory - None
+- [x] External binary dependencies - Only `is-online` script (line 117)
+- [x] Hardcoded paths - Uses ~/.tmux.conf throughout (portable)
 
 ### 3. Git (`config/git/`, `gitconfig`)
 - [ ] Check `config/git/ignore` for anything non-standard
@@ -38,8 +46,9 @@ Comprehensively audit all configuration files in the dotfiles repository to iden
 - [ ] Custom commands that need binaries
 
 ### 5. Karabiner (`config/karabiner/`)
-- [ ] Complex modifications referencing external scripts?
-- [ ] macOS-specific - document as such
+- [x] Complex modifications referencing external scripts? - No external scripts
+- [x] macOS-specific - document as such - Yes, macOS only
+- [x] Device-specific configs standardized - Moved to global simple_modifications
 
 ### 6. GitHub CLI (`config/gh/`)
 - [ ] Check config.yml and hosts.yml for completeness

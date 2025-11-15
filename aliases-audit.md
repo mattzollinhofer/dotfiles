@@ -58,15 +58,15 @@
 ## Summary
 
 ### Missing from install.sh
-1. **fzf** - CRITICAL - used by 5 aliases
-2. **lazygit** - used by 1 alias
-3. **watchexec** - used by 1 alias
+- [x] **fzf** - CRITICAL - used by 5 aliases
+- [x] **lazygit** - used by 1 alias
+- [x] **watchexec** - used by 1 alias
 
 ### Missing from README dependencies
-1. fzf (documented but says "fuzzy finder" - should note aliases depend on it)
-2. lazygit (not mentioned at all)
-3. watchexec (not mentioned)
-4. heroku CLI (project-specific, maybe skip)
+- [ ] fzf (documented but says "fuzzy finder" - should note aliases depend on it)
+- [ ] lazygit (not mentioned at all)
+- [ ] watchexec (not mentioned)
+- [ ] heroku CLI (project-specific, maybe skip)
 
 ### Personal/Non-Portable Aliases
 Lines 56-65 contain personal paths and project-specific aliases:
@@ -78,33 +78,21 @@ Lines 56-65 contain personal paths and project-specific aliases:
 ## Recommendations
 
 ### High Priority
-1. **Add fzf to install.sh** - 5 aliases depend on it
-   ```bash
-   brew install fzf
-   ```
-
-2. **Add lazygit to install.sh** - config already present, just need binary
-   ```bash
-   brew install lazygit
-   ```
+- [x] **Add fzf to install.sh** - 5 aliases depend on it
+- [x] **Add lazygit to install.sh** - config already present, just need binary
+- [x] **Add watchexec to install.sh** or document as optional
 
 ### Medium Priority
-3. **Add watchexec to install.sh** or document as optional
-   ```bash
-   brew install watchexec
-   ```
-
-4. **Update README** to clearly mark which tools aliases depend on
+- [ ] **Update README** to clearly mark which tools aliases depend on
 
 ### Low Priority
-5. **Move personal aliases to .aliases.local** (lines 56-58, 64-65)
+- [ ] **Move personal aliases to .aliases.local** (lines 56-58, 64-65)
    - Keep them in repo but comment out with note to customize
    - Or add to .aliases.local.example
-
-6. **Add git availability check** (probably overkill, git always present on dev machines)
+- [ ] **Add git availability check** (probably overkill, git always present on dev machines)
 
 ## Files to Update
 
-1. **install.sh** - add fzf, lazygit, watchexec
-2. **README.md** - document these as alias dependencies
-3. **aliases** - optionally comment out personal paths
+- [x] **install.sh** - add fzf, lazygit, watchexec
+- [ ] **README.md** - document these as alias dependencies
+- [ ] **aliases** - optionally comment out personal paths
