@@ -84,6 +84,14 @@ if command -v brew &>/dev/null; then
     else
         echo "Meslo LG Nerd Font already installed"
     fi
+
+    # Install neovim
+    if ! brew list neovim &>/dev/null; then
+        echo "Installing neovim..."
+        brew install neovim
+    else
+        echo "neovim already installed"
+    fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
     echo "Please install Homebrew from https://brew.sh"
