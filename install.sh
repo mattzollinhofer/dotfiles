@@ -65,6 +65,22 @@ for file in zshrc aliases aliases.local gitconfig gemrc bash_env gitignore_globa
     fi
 done
 
+# Install Homebrew packages
+echo ""
+echo "Installing Homebrew packages..."
+if command -v brew &>/dev/null; then
+    # Install powerlevel10k theme
+    if ! brew list powerlevel10k &>/dev/null; then
+        echo "Installing powerlevel10k..."
+        brew install powerlevel10k
+    else
+        echo "powerlevel10k already installed"
+    fi
+else
+    echo "Warning: Homebrew not found. Skipping package installation."
+    echo "Please install Homebrew from https://brew.sh"
+fi
+
 # Clone fzf-git if not present
 echo ""
 if [ ! -d "$HOME/.fzf-git" ]; then

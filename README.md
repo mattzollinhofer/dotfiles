@@ -57,6 +57,7 @@ Install required tools:
 - GNU coreutils (ggrep, gdate, gawk) - `brew install coreutils gawk`
 - `fzf` - fuzzy finder
 - `gh` - GitHub CLI
+- `powerlevel10k` - zsh theme (installed automatically by install.sh)
 
 ### 3. Font (Optional)
 Install a Nerd Font for proper icon rendering in nvim:
