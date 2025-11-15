@@ -25,4 +25,3 @@ config/aider/
 
 # Local overrides (allow users to have local configs not committed)
 *.local
-!aliases.local
