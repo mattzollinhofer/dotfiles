@@ -50,18 +50,25 @@ chmod 600 ~/.secrets
 Then edit `~/.secrets` and add your actual API tokens and machine-specific paths.
 
 ### 2. Dependencies
-Install required tools:
-- `nvim` - editor
-- `tmux` - terminal multiplexer
-- `mise` - dev environment manager (optional, can use asdf instead)
-- `atuin` - shell history sync (optional)
-- GNU coreutils (ggrep, gdate, gawk) - `brew install coreutils gawk`
-- `fzf` - fuzzy finder
-- `gh` - GitHub CLI
+
+**Manual install required:**
+- `tmux` - terminal multiplexer - `brew install tmux`
+- `mise` - dev environment manager (optional, can use asdf instead) - `brew install mise`
+- `atuin` - shell history sync (optional) - `brew install atuin`
+- GNU coreutils - `brew install coreutils gawk`
+- `gh` - GitHub CLI - `brew install gh`
+- Xcode Command Line Tools (provides `make`, `git`) - `xcode-select --install`
 
 **Automatically installed by install.sh:**
+- `neovim` - editor
 - `powerlevel10k` - zsh theme
 - `font-meslo-lg-nerd-font` - Meslo LG Nerd Font (p10k recommended font)
+- `fzf` - fuzzy finder (required by shell aliases and zsh)
+- `lazygit` - git TUI (required by `glg` alias)
+- `watchexec` - file watcher (required by `wrt` alias)
+- `fd` - file finder (required by nvim Telescope)
+- `ripgrep` - grep tool (required by nvim Telescope)
+- `universal-ctags` - tag generator (required by nvim gutentags)
 
 ### 3. Font Setup
 The install script automatically installs **Meslo LG Nerd Font**, which is the recommended font for powerlevel10k. After installation, you must manually configure your terminal to use it:
