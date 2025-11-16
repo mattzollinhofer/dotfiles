@@ -66,6 +66,13 @@ for file in zshrc aliases gitconfig gemrc bash_env gitignore_global p10k.zsh tmu
     fi
 done
 
+# Symlink agent-os directory
+echo ""
+echo "Setting up agent-os symlink..."
+if [ -d "$DOTFILES_DIR/agent-os" ]; then
+    create_symlink "$DOTFILES_DIR/agent-os" "$HOME/.agent-os"
+fi
+
 # Install Homebrew packages
 echo ""
 echo "Installing Homebrew packages..."
