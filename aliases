@@ -53,6 +53,7 @@ alias rc='rails console'
 alias sz='source ~/.zshrc'
 alias sa='source ~/.aliases'
 alias cc='claude'
+alias ccc='claude --dangerously-skip-permissions'
 
 # Personal/machine-specific aliases moved to ~/.aliases.local
 # Uncomment and customize in your .aliases.local file:
