@@ -20,6 +20,9 @@ PATH=$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$(brew --prefix)/opt/coreutils/
 export BASH_ENV=~/.bash_env
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# Load GNU tool aliases for consistent environment
+[[ -f ~/.bash_env ]] && source ~/.bash_env
+
 # Load secrets (API tokens, credentials)
 [[ -f ~/.secrets ]] && source ~/.secrets
 
