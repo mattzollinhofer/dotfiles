@@ -54,3 +54,6 @@ export OLLAMA_API_BASE="http://localhost:11434"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export GIT_EDITOR="nvim"
+
+# Load local machine-specific configuration
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
