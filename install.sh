@@ -156,6 +156,15 @@ else
     echo "fzf-git.sh already installed"
 fi
 
+# Clone catppuccin tmux theme if not present
+if [ ! -d "$HOME/.tmux/catppuccin" ]; then
+    echo "Cloning catppuccin tmux theme..."
+    mkdir -p "$HOME/.tmux"
+    git clone https://github.com/catppuccin/tmux.git "$HOME/.tmux/catppuccin"
+else
+    echo "catppuccin tmux theme already installed"
+fi
+
 echo ""
 echo "Done! Dotfiles installed."
 echo "Note: Some configs (prr, shortcut-cli) are excluded for security."
