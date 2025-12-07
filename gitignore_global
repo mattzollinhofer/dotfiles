@@ -2,3 +2,6 @@
 .secrets
 .netrc
 .ff-pins
+
+tags
+.envrc

@@ -24,7 +24,7 @@
   amend = commit --amend
   deploy-notes = log --pretty=format:'*%s* (%h)%n%n%b%n'
   z = recent
-  edit = "!c() { $EDITOR $(git diff --name-only --diff-filter=dr HEAD; git diff --name-only --diff-filter=dr ${1:-'@{upstream}'}...) ; }; c"
+  edit = "!c() { $EDITOR -p $(git diff --name-only --diff-filter=dr HEAD; git diff --name-only --diff-filter=dr ${1:-'@{upstream}'}...) ; }; c"
 
   others-branches = !git branch | grep -v "z[/-]" | egrep '[a-z]{2,4}[/-]|[0-9]{3,}'
   delete-others-branches = !git others-branches | xargs git branch --delete --force
@@ -36,7 +36,7 @@
   ff = only
   summary = true
 [push]
-  autoSetupRemote = false
+  autoSetupRemote = true
   default = current
   followTags = true
 [pull]

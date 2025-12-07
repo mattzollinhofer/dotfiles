@@ -920,7 +920,7 @@ vim.keymap.set('n', '<Leader>w<space>', ':w<CR>', { silent = true, desc = 'Save 
 vim.keymap.set('n','<Leader>q', ':q<CR>', { silent=true })		
 vim.keymap.set('n','<Leader>wq', ':wq<CR>',{ silent=true })
 vim.keymap.set('n','<Leader><Leader>', ':nohlsearch<CR>', { silent=true, desc = 'Unhighlight' })
-vim.api.nvim_create_autocmd('FocusLost', { command = 'wa' })
+vim.api.nvim_create_autocmd('FocusLost', { command = 'silent! wa' })
 vim.keymap.set('i','jk','<Esc>:w<CR>',{desc='Esc+save'})
 vim.keymap.set('n','q','<nop>',{ desc = 'Disable macro recording' })
 vim.keymap.set('n', 'Q', 'q', { desc = 'Record macro' })
