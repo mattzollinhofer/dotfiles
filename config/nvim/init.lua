@@ -618,7 +618,7 @@ require('lazy').setup({
           "gitcommit",
         },
         highlight = { enable = true },
-        indent = { enable = true , disable = {"lua, ruby"}},
+        indent = { enable = true , disable = {"lua", "ruby"}},
 
         -- folding support
         fold = {
@@ -815,13 +815,14 @@ require('lazy').setup({
             vim.keymap.set(mode, l, r, opts)
           end
 
-          -- Navigation
+          -- Navigation (center screen after jump)
           map('n', ']c', function()
             if vim.wo.diff then
               vim.cmd.normal({']c', bang = true})
             else
               gitsigns.nav_hunk('next')
             end
+            vim.cmd('normal! zz')
           end)
 
           map('n', '[c', function()
@@ -830,6 +831,7 @@ require('lazy').setup({
             else
               gitsigns.nav_hunk('prev')
             end
+            vim.cmd('normal! zz')
           end)
 
           -- Actions
