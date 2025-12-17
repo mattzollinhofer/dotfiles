@@ -28,6 +28,8 @@
 
   others-branches = !git branch | grep -v "z[/-]" | egrep '[a-z]{2,4}[/-]|[0-9]{3,}'
   delete-others-branches = !git others-branches | xargs git branch --delete --force
+  test-branches = !git branch | grep -e 'asdf' -e 'foo' -e 'z-test'
+  delete-test-branches = !git test-branches | xargs git branch --delete --force
 [init]
   defaultBranch = main
 [gc]
