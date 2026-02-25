@@ -10,6 +10,7 @@ echo "Installing dotfiles from $DOTFILES_DIR"
 backup_if_exists() {
     local target=$1
     if [ -e "$target" ] && [ ! -L "$target" ]; then
+        # shellcheck disable=SC2155
         local backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
         echo "Backing up existing $target to $backup"
         mv "$target" "$backup"
@@ -164,6 +165,17 @@ if [ ! -d "$HOME/.tmux/catppuccin" ]; then
 else
     echo "catppuccin tmux theme already installed"
 fi
+
+# Symlink personal scripts
+echo ""
+echo "Setting up ~/bin symlinks..."
+mkdir -p "$HOME/bin"
+for file in "$DOTFILES_DIR"/bin/*; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        create_symlink "$file" "$HOME/bin/$filename"
+    fi
+done
 
 echo ""
 echo "Done! Dotfiles installed."

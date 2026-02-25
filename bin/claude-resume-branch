@@ -1,0 +1,194 @@
+#!/bin/sh
+set -e
+
+# Find and resume a Claude Code session by searching session transcripts.
+# Uses grep for fast filtering, falls back to Claude (haiku) for ranking.
+# Copies the resume command to clipboard.
+#
+# Usage: claude-resume-branch <search terms...>
+# Examples:
+#   claude-resume-branch i18n-activity-goal
+#   claude-resume-branch tmux links
+
+if [ $# -eq 0 ]; then
+    echo "Usage: claude-resume-branch <term> [term...]"
+    exit 1
+fi
+
+project_dir="$HOME/.claude/projects"
+search_query="$*"
+max_ai_candidates=50
+
+if [ ! -d "$project_dir" ]; then
+    echo "No Claude projects directory found at $project_dir"
+    exit 1
+fi
+
+# --- Helpers ---
+
+# Extract session info from a JSONL file.
+# Outputs: session_id<TAB>branch<TAB>date<TAB>cwd<TAB>first_user_message
+session_preview() {
+    python3 -c "
+import json, sys, os, re
+path = sys.argv[1]
+session_id = os.path.basename(path).replace('.jsonl', '')
+mod_time = os.path.getmtime(path)
+
+from datetime import datetime
+date_str = datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M')
+
+def strip_xml_tags(text):
+    return re.sub(r'<[^>]+>', '', text).strip()
+
+branch = ''
+cwd = ''
+with open(path) as f:
+    for line in f:
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if obj.get('type') == 'user':
+            if not branch:
+                branch = obj.get('gitBranch', '')
+            if not cwd:
+                cwd = obj.get('cwd', '')
+            if obj.get('userType') == 'external':
+                content = obj['message']['content']
+                if isinstance(content, list):
+                    parts = [p.get('text','') for p in content if isinstance(p, dict) and p.get('type') == 'text']
+                    content = ' '.join(parts)
+                if not isinstance(content, str):
+                    continue
+                if content.startswith(('<local-command', '<command-name>/clear')):
+                    continue
+                content = strip_xml_tags(content)
+                if not content:
+                    continue
+                preview = content[:120].replace('\n', ' ').replace('\t', ' ')
+                preview = re.sub(r'\s+', ' ', preview).strip()
+                if len(content) > 120:
+                    preview += '...'
+                print(session_id + '\t' + branch + '\t' + date_str + '\t' + cwd + '\t' + preview)
+                sys.exit(0)
+print(session_id + '\t' + branch + '\t' + date_str + '\t' + cwd + '\t' + '(no user message found)')
+" "$1"
+}
+
+show_and_copy() {
+    # Args: tab-separated line (session_id<TAB>branch<TAB>date<TAB>cwd<TAB>prompt)
+    session_id=$(printf '%s' "$1" | cut -f1)
+    branch=$(printf '%s' "$1" | cut -f2)
+    date_str=$(printf '%s' "$1" | cut -f3)
+    cwd=$(printf '%s' "$1" | cut -f4)
+    prompt=$(printf '%s' "$1" | cut -f5)
+
+    resume_cmd="ccc --resume $session_id"
+    full_cmd="cd $cwd && $resume_cmd"
+    printf '%s' "$resume_cmd" | pbcopy
+
+    echo "  branch:  $branch"
+    echo "  date:    $date_str"
+    echo "  dir:     $cwd"
+    echo "  prompt:  $prompt"
+    echo ""
+    echo "  Copied:    $resume_cmd"
+    echo "  Full cmd:  $full_cmd"
+    echo ""
+}
+
+# --- Grep-based search ---
+
+matches=$(grep -rl "$1" "$project_dir" --include="*.jsonl" | grep -v '/subagents/' | sort -u)
+shift
+for term in "$@"; do
+    if [ -z "$matches" ]; then
+        break
+    fi
+    matches=$(echo "$matches" | xargs grep -l "$term")
+done
+
+grep_count=0
+if [ -n "$matches" ]; then
+    grep_count=$(echo "$matches" | wc -l | tr -d ' ')
+fi
+
+# Exact single match — show and copy directly
+if [ "$grep_count" -eq 1 ]; then
+    preview=$(session_preview "$matches")
+    echo ""
+    show_and_copy "$preview"
+    exit 0
+fi
+
+# --- AI-assisted search (multiple results or zero results) ---
+
+if [ "$grep_count" -eq 0 ]; then
+    echo "No exact matches for '$search_query'. Searching with AI..."
+    # Grab recent sessions as candidates
+    candidates=$(find "$project_dir" -name "*.jsonl" -not -path "*/subagents/*" -print0 \
+        | xargs -0 stat -f '%m %N' 2>/dev/null \
+        | sort -rn \
+        | head -"$max_ai_candidates" \
+        | awk '{print $2}')
+else
+    echo "Found $grep_count matches for '$search_query'. Using AI to find the best..."
+    # Use the grep matches but cap them
+    candidates=$(echo "$matches" | head -"$max_ai_candidates")
+fi
+
+# Build summaries for AI
+summaries=""
+while read -r file; do
+    preview=$(session_preview "$file")
+    summaries="$summaries
+$preview"
+done <<EOF
+$candidates
+EOF
+
+# Remove leading blank line
+summaries=$(echo "$summaries" | tail -n +2)
+
+# Ask haiku to pick the best match(es)
+ai_prompt="I'm looking for a Claude Code session about: $search_query
+
+Here are candidate sessions (tab-separated: session_id, branch, date, directory, first_prompt):
+
+$summaries
+
+Which 1-2 sessions most likely match what I'm looking for?
+Reply ONLY with the session_id(s), one per line. Nothing else.
+If none are a good match, reply with just the word NONE."
+
+ai_result=$(echo "$ai_prompt" | CLAUDE_SESSION_LOG_SUMMARIZER=1 claude --print --model haiku --no-session-persistence 2>/dev/null) || {
+    echo "AI search failed."
+    exit 1
+}
+
+if [ "$ai_result" = "NONE" ]; then
+    echo "No confident match found for '$search_query'."
+    exit 1
+fi
+
+# Show AI-selected sessions, copy the first one
+echo ""
+first=true
+echo "$ai_result" | while read -r session_id; do
+    file=$(find "$project_dir" -name "${session_id}.jsonl" -not -path "*/subagents/*" | head -1)
+    if [ -n "$file" ]; then
+        preview=$(session_preview "$file")
+        if [ "$first" = true ]; then
+            show_and_copy "$preview"
+            first=false
+        else
+            echo "  Also possibly:"
+            echo "  branch:  $(printf '%s' "$preview" | cut -f2)"
+            echo "  date:    $(printf '%s' "$preview" | cut -f3)"
+            echo "  dir:     $(printf '%s' "$preview" | cut -f4)"
+            echo "  prompt:  $(printf '%s' "$preview" | cut -f5)"
+            echo ""
+        fi
+    fi
+done
