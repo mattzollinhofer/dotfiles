@@ -1463,3 +1463,29 @@ vim.api.nvim_create_autocmd("FileType", {
     end
   end,
 })
+
+-- Auto-stop LSP clients in idle neovim sessions (30 min)
+-- Problem (2026-04): with many concurrent nvim sessions open, each spawns its
+-- own ruby-lsp process. Idle sessions' ruby-lsp processes were spinning at
+-- 99.9% CPU each (indexer loop), causing 8+ runaway processes and major CPU
+-- load. This stops LSP in sessions idle for 30 min. Neovim auto-restarts the
+-- LSP client when you return to a buffer (with a brief re-index delay).
+-- If this is no longer needed, check: are idle ruby-lsp processes still a problem?
+local lsp_idle_timeout_ms = 30 * 60 * 1000
+local lsp_idle_timer = nil
+
+local function reset_lsp_idle_timer()
+  if lsp_idle_timer then
+    lsp_idle_timer:stop()
+  end
+  lsp_idle_timer = vim.defer_fn(function()
+    local clients = vim.lsp.get_clients()
+    if #clients > 0 then
+      vim.lsp.stop_client(clients)
+    end
+  end, lsp_idle_timeout_ms)
+end
+
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorMoved", "InsertLeave" }, {
+  callback = reset_lsp_idle_timer,
+})
