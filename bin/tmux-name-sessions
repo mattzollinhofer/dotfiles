@@ -1,0 +1,56 @@
+#!/bin/bash
+# Uses Claude Haiku to suggest names for unnamed/numbered tmux sessions
+# based on window names and working directories.
+
+set -e
+
+# Gather session info
+session_info=""
+for session in $(tmux list-sessions -F '#{session_name}'); do
+  windows=$(tmux list-windows -t "$session" -F '  #{window_name}: #{pane_current_path} (#{pane_current_command})')
+  window_count=$(tmux list-windows -t "$session" | wc -l | tr -d ' ')
+  session_info+="Session \"$session\" ($window_count windows):
+$windows
+
+"
+done
+
+prompt="You are naming tmux sessions so they can be identified after a reboot restore.
+
+Rules:
+- Names should be 1-2 words, lowercase, no spaces (use hyphens if needed)
+- Name based on the project or primary activity visible in the window names and directories
+- If most windows share a theme or project, use that as the name
+- Keep names short and memorable
+
+Here are the current sessions with their windows, working directories, and running commands:
+
+$session_info
+Respond with ONLY a plain list, one per line, in this exact format:
+old_name -> new_name
+
+If a session already has a good descriptive name, keep it the same."
+
+echo "Asking Claude for session name suggestions..."
+echo ""
+
+suggestions=$(echo "$prompt" | claude --model haiku --print)
+
+echo "$suggestions"
+echo ""
+
+# Ask before renaming
+read -r -p "Apply these renames? [y/N] " confirm
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+  while IFS= read -r line; do
+    old=$(echo "$line" | sed 's/ *-> .*//')
+    new=$(echo "$line" | sed 's/.* -> //')
+    if [ -n "$old" ] && [ -n "$new" ] && [ "$old" != "$new" ]; then
+      echo "Renaming: $old -> $new"
+      tmux rename-session -t "$old" "$new" 2>/dev/null || echo "  Failed to rename $old"
+    fi
+  done <<< "$suggestions"
+  echo "Done!"
+else
+  echo "No changes made."
+fi

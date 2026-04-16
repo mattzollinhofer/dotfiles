@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Edit files that have changed in HEAD and since upstream (or specified ref)
+# Usage: git-edit-files [ref]
+# Example: git-edit-files HEAD~
+
+files=$(git diff --name-only --diff-filter=d HEAD | grep -v '.png'; git diff --name-only --diff-filter=d ${1:-'@{upstream}'}...)
+$EDITOR $(echo "$files" | grep -v png)
