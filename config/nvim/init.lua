@@ -1367,6 +1367,34 @@ map('<leader>gsl',    ':!clear; git stash list<CR>')          -- stash list
 map('<leader>gsd',    ':!clear; git stash show -p<CR>')       -- stash diff
 map('<leader>gss',    ':!clear; git stash save ')             -- new stash (add msg next)
 map('<leader>gsp',    ':!clear; git stash pop stash@{ ')      -- start stash pop
+
+-- K on a git SHA: quick view with fugitive, full diff review with <leader>K
+vim.keymap.set('n', 'K', function()
+  local ft = vim.bo.filetype
+  if ft:match('^fugitive') then
+    vim.api.nvim_feedkeys('K', 'ni', false)
+    return
+  end
+  local word = vim.fn.expand('<cword>')
+  if word:match('^%x%x%x%x%x%x+$') and not word:match('^%d+$') then
+    local ok, err = pcall(function()
+      vim.cmd('tabnew')
+      vim.cmd('Gedit ' .. word)
+    end)
+    if not ok then
+      vim.notify('Gedit failed: ' .. err, vim.log.levels.WARN)
+    end
+  else
+    vim.api.nvim_feedkeys('K', 'ni', false)
+  end
+end, { desc = 'Show commit under cursor or default K' })
+
+vim.keymap.set('n', '<leader>K', function()
+  local word = vim.fn.expand('<cword>')
+  if word:match('^%x%x%x%x%x%x+$') and not word:match('^%d+$') then
+    vim.cmd('DiffviewOpen ' .. word .. '^!')
+  end
+end, { desc = 'Diffview for commit under cursor' })
 -- ============================================================================
 
 -- AnsiEsc: automatically process ANSI escape codes in log files
