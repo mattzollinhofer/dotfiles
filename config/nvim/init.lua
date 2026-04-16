@@ -1012,6 +1012,9 @@ vim.opt.sidescrolloff = 5
 vim.keymap.set('n','<Leader>sp', ':set paste!<CR>', { silent = true, desc = "Toggle set paste" })
 vim.cmd("iabbrev teh the")
 vim.cmd("iabbrev tn: Technical notes:<CR><CR>")
+vim.cmd("iabbrev prra @prr approve")
+vim.cmd("iabbrev sdt 🚀 merge depending on tests passing")
+vim.cmd("iabbrev mdt 🚀 merge depending on tests passing")
 
 -- copy file contents to clipboard
 vim.keymap.set('n', '<leader>cf', function()
