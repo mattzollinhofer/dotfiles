@@ -157,6 +157,15 @@ else
     echo "fzf-git.sh already installed"
 fi
 
+# Clone TPM if not present
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    echo "Cloning TPM (Tmux Plugin Manager)..."
+    mkdir -p "$HOME/.tmux/plugins"
+    git clone https://github.com/tmux-plugins/tpm.git "$HOME/.tmux/plugins/tpm"
+else
+    echo "TPM already installed"
+fi
+
 # Clone catppuccin tmux theme if not present
 if [ ! -d "$HOME/.tmux/catppuccin" ]; then
     echo "Cloning catppuccin tmux theme..."
@@ -164,6 +173,16 @@ if [ ! -d "$HOME/.tmux/catppuccin" ]; then
     git clone https://github.com/catppuccin/tmux.git "$HOME/.tmux/catppuccin"
 else
     echo "catppuccin tmux theme already installed"
+fi
+
+# Restore Hex (voice-to-text) settings if app container exists
+HEX_CONTAINER="$HOME/Library/Containers/com.kitlangton.Hex/Data/Library/Application Support/com.kitlangton.Hex"
+if [ -d "$HEX_CONTAINER" ]; then
+    echo "Restoring Hex settings..."
+    cp "$DOTFILES_DIR/config/hex/hex_settings.json" "$HEX_CONTAINER/hex_settings.json"
+    echo "Hex settings restored"
+else
+    echo "Hex app container not found, skipping (install Hex first: brew install --cask kitlangton-hex)"
 fi
 
 # Symlink personal scripts
