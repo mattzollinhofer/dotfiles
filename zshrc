@@ -1,3 +1,7 @@
+# load .envrc files in directories
+export DIRENV_LOG_FORMAT=""
+eval "$(direnv hook zsh)" 2>/dev/null
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -15,7 +19,7 @@ compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
-PATH=$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$(brew --prefix)/opt/coreutils/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/opt/libpq/bin:/usr/local/bin/:$HOME/code/welcomehome/bin:~/code/playbook/bin:~/code/playbook/contrib:$PATH
+PATH=$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$(brew --prefix)/opt/coreutils/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:$(brew --prefix)/opt/postgresql@17/bin:$HOME/bin:$(brew --prefix)/bin:/usr/local/bin/:$HOME/code/welcomehome/bin:~/code/playbook/bin:~/code/playbook/contrib:$PATH
 
 export BASH_ENV=~/.bash_env
 export XDG_CONFIG_HOME="$HOME/.config"
