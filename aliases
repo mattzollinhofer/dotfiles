@@ -38,15 +38,33 @@ alias gca='clear; git ci --amend'
 alias ca='clear; git ci --amend'
 alias gco='git co'
 alias gcb='git co -b'
+alias gcpb='git branch --show-current | tr -d "\n" | pbcopy'
+alias gcpc='git rev-parse HEAD | tr -d "\n" | pbcopy'
 alias gls="git ls | fzf --multi --reverse --preview 'git show {+2}'"
 alias gcf="git br | fzf | xargs git checkout"
 alias gcz="git br | fzf | xargs git checkout"
 alias gbf="git br | fzf | xargs git checkout"
 alias gbz="git br | fzf | xargs git checkout"
+alias gbr="git branch"
+alias gbrc="git branch --show-current"
 alias grM="git fetch; git rebase origin/main"
+alias gru="git fetch; git rebase @{u}"
+alias grou="git fetch; git rebase --onto @{u} @{u}@{1}"
+alias gro="git fetch; git rebase --onto "
 alias gri="git fetch; git rebase -i "
 alias grii="git fetch; git rebase -i HEAD~~~"
 alias griM="git fetch; git rebase -i origin/main"
+alias griu="git fetch; git rebase -i @{u}"
+alias grC='git rebase --continue'
+alias grA='git rebase --abort'
+grH() { [ -z "$1" ] && echo "Usage: grH <commit>" && return 1; git reset --hard "$1"; }
+alias grHo='git fetch && git reset --hard origin/$(git branch --show-current)'
+alias grHM='git fetch && git reset --hard origin/main'
+alias gsuM='git branch --set-upstream-to origin/main'
+
+alias cpb='git branch --show-current | tr -d "\n" | pbcopy'
+alias cpc='git rev-parse HEAD | tr -d "\n" | pbcopy'
+alias cpd='pwd | tr -d "\n" | pbcopy'
 
 alias psg="ps -ef | grep "
 alias ln='ln -v'
@@ -61,27 +79,12 @@ alias rc='rails console'
 alias sz='source ~/.zshrc'
 alias sa='source ~/.aliases'
 alias cc='claude'
-alias ccc='claude --dangerously-skip-permissions'
+alias cccc='claude --dangerously-skip-permissions --chrome'
+alias crb='claude-resume-branch '
+alias crc='claude-resume-branch '
 
-# Personal/machine-specific aliases moved to ~/.aliases.local
-# Uncomment and customize in your .aliases.local file:
-# alias todo='cd ~/alfred/todos'
-# alias mfa='~/code/playbook/bin/aws-perform-mfa $(rbw totp https://us-east-2.signin.aws.amazon.com)'
-# alias review_app_console='heroku run rails c -a '
-# alias cxs='cx-rails-console crm-staging'
-# alias cxp='cx-rails-console crm-production '
 
 alias network_stability_check="stdbuf -oL ping 8.8.8.8 | stdbuf -oL cut -d'=' -f4 | cut -d' ' -f1"
-
-watchexec_welcomehome() {
-  if [[ -n "$1" && "$1" != "V" ]]; then
-    watchexec -c clear -d 100 -w app -w test -w bin -w config -w lib -w spec rails test $@
-  else
-    echo "Specify a path!" >&2
-  fi
-}
-alias wrt=watchexec_welcomehome
-alias truncate='gtruncate'
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local
