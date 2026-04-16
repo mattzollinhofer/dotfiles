@@ -1280,6 +1280,42 @@ vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "Toggle comment select
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "Toggle comment line" })
 vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "Toggle comment selection" })
 
+-- Visual select then // to search for selection in current buffer
+vim.keymap.set('v', '//', 'y/\\V<C-r>"<CR>', { desc = 'Search for visual selection' })
+
+-- g* = search for text inside nearest delimiters ("" '' () [])
+vim.keymap.set('n', 'g*', function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+
+  local delimiters = {
+    {'"', '"'},
+    {"'", "'"},
+    {'(', ')'},
+    {'[', ']'},
+  }
+
+  for _, d in ipairs(delimiters) do
+    local open, close = d[1], d[2]
+    local lo
+    for i = col, 1, -1 do
+      if line:sub(i, i) == open then lo = i; break end
+    end
+    local hi
+    if lo then
+      for i = lo + 1, #line do
+        if line:sub(i, i) == close then hi = i; break end
+      end
+    end
+    if lo and hi and hi > lo + 1 and col >= lo and col <= hi then
+      local text = line:sub(lo + 1, hi - 1)
+      vim.fn.setreg('/', '\\V' .. vim.fn.escape(text, '\\/'))
+      vim.opt.hlsearch = true
+      return
+    end
+  end
+end, { desc = 'Search for text inside nearest delimiters' })
+
 
 -- Ruby/Rails
 vim.keymap.set('n','<Leader>bb',"obinding.pry<Esc>",{desc='pry'})
