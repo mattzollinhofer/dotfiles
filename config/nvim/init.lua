@@ -3,7 +3,7 @@ vim.opt.termguicolors = true
 vim.opt.expandtab = true
 vim.opt.shiftwidth=2
 vim.opt.tabstop=2
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "81"
 vim.opt.undofile = true
 vim.opt.undolevels = 10000
 vim.g.gutentags_ctags_tagfile = '.git/tags'
@@ -26,8 +26,9 @@ require('lazy').setup({
     'christoomey/vim-tmux-navigator',
     lazy = false,               -- load on start (it’s tiny)
   },
+  { ‘tpope/vim-obsession’ },
   {
-    'ludovicchabant/vim-gutentags'
+    ‘ludovicchabant/vim-gutentags’
   },
   -- {
   --   'powerman/vim-plugin-AnsiEsc'
@@ -341,7 +342,7 @@ require('lazy').setup({
   },
   {
     'tpope/vim-fugitive',
-    cmd = { 'Git', 'G', 'Gdiffsplit', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GRename', 'GRemove', 'GBrowse' },
+    cmd = { 'Git', 'G', 'Gdiffsplit', 'Gedit', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GRename', 'GRemove', 'GBrowse' },
   },
 
   {
@@ -1117,7 +1118,7 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.spelllang = 'en_us'
     vim.opt_local.textwidth = 80
     vim.opt_local.formatoptions:append("t")
-    vim.opt_local.colorcolumn = "80"
+    vim.opt_local.colorcolumn = "81"
 
     -- Make "=" a format operator
     vim.keymap.set("n", "=", "gq", { buffer = true })
