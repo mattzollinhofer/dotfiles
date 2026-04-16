@@ -37,9 +37,10 @@ configuration files in the dotfiles repository to identify:
 - [x] Hardcoded paths - Uses ~/.tmux.conf throughout (portable)
 
 ### 3. Git (`config/git/`, `gitconfig`)
-- [ ] Check `config/git/ignore` for anything non-standard
-- [ ] Verify all git aliases in `gitconfig` work without external tools
-- [ ] Check if any aliases reference scripts/binaries
+- [x] Check `config/git/ignore` for anything non-standard - Only Claude settings, portable
+- [x] Verify all git aliases in `gitconfig` work without external tools - All deps in install.sh (fzf, nvim)
+- [x] Check if any aliases reference scripts/binaries - Only standard Unix tools (grep, xargs)
+- [x] Audit complete - See git-audit.md
 
 ### 4. Lazygit (`config/lazygit/`)
 - [ ] Check config.yml for external dependencies
