@@ -464,6 +464,19 @@ require('lazy').setup({
 
       -- New mapping for "grep with args"
       vim.keymap.set("n", "<leader>gg", telescope.extensions.live_grep_args.live_grep_args, { desc = "Grep (args)" })
+      vim.keymap.set("n", "<leader>GG", function()
+        local gem_paths = vim.fn.systemlist("bundle show --paths 2>/dev/null")
+        table.insert(gem_paths, 1, vim.fn.getcwd())
+        require("telescope.builtin").live_grep({ search_dirs = gem_paths })
+      end, { desc = "Grep in project + gems" })
+      vim.keymap.set("n", "<leader>fG", function()
+        local gem_paths = vim.fn.systemlist("bundle show --paths 2>/dev/null")
+        table.insert(gem_paths, 1, vim.fn.getcwd())
+        require("telescope.builtin").find_files({
+          search_dirs = gem_paths,
+          prompt_title = "Find files in project + gems",
+        })
+      end, { desc = "Find files in project + gems" })
       vim.keymap.set('n', '<Leader>gw', function() require('telescope.builtin').grep_string() end, { desc = 'Telescope git grep' })
       vim.keymap.set('n', '<leader>gf', function()
         local changed_files = vim.fn.systemlist(
@@ -987,6 +1000,9 @@ vim.keymap.set("n", "<leader>fz", function()
     previewer = true, -- show preview inside the ivy layout if you like
   }))
 end, { desc = "Find files (git) — ivy bottom pane" })
+vim.keymap.set('n', '<Leader>FF', function()
+  pcall(require('telescope.builtin').git_files)
+end, { desc = 'Find files (git)' })
 vim.keymap.set('n', '<Leader>fa', '<Cmd>Telescope find_files<CR>', { desc = 'Find files (Telescope)' })
 vim.keymap.set('n', '<Leader>fy', function()
   require('telescope.builtin').find_files({
