@@ -6,6 +6,7 @@ vim.opt.tabstop=2
 vim.opt.colorcolumn = "81"
 vim.opt.undofile = true
 vim.opt.undolevels = 10000
+vim.opt.clipboard = 'unnamedplus'
 vim.g.gutentags_ctags_tagfile = '.git/tags'
 vim.g.gutentags_exclude_filetypes = {'gitcommit', 'gitrebase', 'gitconfig'}
 vim.filetype.add({ extension = { prr = 'prr' } })
@@ -24,11 +25,11 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   {
     'christoomey/vim-tmux-navigator',
-    lazy = false,               -- load on start (it’s tiny)
+    lazy = false,               -- load on start (it's tiny)
   },
-  { ‘tpope/vim-obsession’ },
+  { 'tpope/vim-obsession' },
   {
-    ‘ludovicchabant/vim-gutentags’
+    'ludovicchabant/vim-gutentags'
   },
   -- {
   --   'powerman/vim-plugin-AnsiEsc'
@@ -154,7 +155,7 @@ require('lazy').setup({
           {
             content = {
               active = function()
-                -- Use Mini’s own helpers so colors/HL groups stay identical
+                -- Use Mini's own helpers so colors/HL groups stay identical
                 local mode, mode_hl        = ms.section_mode({ trunc_width = 120 })
                 local diagnostics          = ms.section_diagnostics({ trunc_width = 75 })
                 local filename             = ms.section_filename({ trunc_width = 140, relative = 'git' })
@@ -344,6 +345,7 @@ require('lazy').setup({
     'tpope/vim-fugitive',
     cmd = { 'Git', 'G', 'Gdiffsplit', 'Gedit', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GRename', 'GRemove', 'GBrowse' },
   },
+  { 'tpope/vim-rhubarb' },
 
   {
     'tpope/vim-eunuch',
@@ -1044,6 +1046,10 @@ vim.keymap.set('n', '<leader>cpf', function()
   vim.fn.setreg('+', fpath)
   vim.notify('Copied file path: ' .. fpath, vim.log.levels.INFO)
 end, { noremap = true, silent = true, desc = 'Copy current file path' })
+
+-- copy GitHub permalink to clipboard (requires vim-rhubarb)
+vim.keymap.set('n', '<leader>cg', ':GBrowse!<CR>', { silent = true, desc = 'Copy GitHub link' })
+vim.keymap.set('v', '<leader>cg', ':GBrowse!<CR>', { silent = true, desc = 'Copy GitHub link (range)' })
 
 -- Open Files
 -- mini files based ctrl+p
