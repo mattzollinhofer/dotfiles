@@ -58,8 +58,19 @@
 [core]
   editor = nvim
   excludesfile = ~/.gitignore_global
+  pager = delta
+[delta]
+  navigate = true
+  light = true
+  features = catppuccin-latte
+  commit-decoration-style = bold blue box ul
+  commit-style = blue
+  file-style = cyan
+  file-decoration-style = cyan ul
+[diff]
+  colorMoved = default
+  colorMovedWs = allow-indentation-change
 [include]
   path = ~/.gitconfig.local
-[user]
-  name = Z
-  email = mattz@hey.com
+[safe]
+	directory = /Users/z-dev/code/worktrees/zz-i18n-misc-text
