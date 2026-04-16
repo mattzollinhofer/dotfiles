@@ -852,10 +852,79 @@ require('lazy').setup({
           map('n', '<leader>hs', gitsigns.stage_hunk )
           map('n', '<leader>ha', gitsigns.stage_hunk )
           map('n', '<leader>hr', gitsigns.reset_hunk)
+          map('n', '<leader>hd', gitsigns.preview_hunk_inline)
+          map('n', '<leader>hp', gitsigns.preview_hunk_inline)
+          map('n', '<leader>hbl', gitsigns.toggle_current_line_blame)
+          map('n', '<leader>hq', gitsigns.setqflist)
 
           map('v', '<leader>hs', function()
             gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
           end)
+
+          -- Jump to next/prev changed hunk (skip pure adds/deletes)
+          map('n', ']u', function()
+            local hunks = gitsigns.get_hunks()
+            if not hunks then return end
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            for _, h in ipairs(hunks) do
+              if h.type == 'change' and h.added.start > line then
+                vim.api.nvim_win_set_cursor(0, {h.added.start, 0})
+                vim.cmd('normal! zz')
+                return
+              end
+            end
+          end, { desc = "Next changed hunk (skip add/delete)" })
+
+          map('n', '[u', function()
+            local hunks = gitsigns.get_hunks()
+            if not hunks then return end
+            local line = vim.api.nvim_win_get_cursor(0)[1]
+            for i = #hunks, 1, -1 do
+              local h = hunks[i]
+              if h.type == 'change' and h.added.start < line then
+                vim.api.nvim_win_set_cursor(0, {h.added.start, 0})
+                vim.cmd('normal! zz')
+                return
+              end
+            end
+          end, { desc = "Prev changed hunk (skip add/delete)" })
+
+          map("n", "<leader>hbb", function()
+            local gs = require("gitsigns")
+
+            local function trim(s) return (s:gsub("%s+$", "")) end
+            local function git(cmd)
+              return trim(vim.fn.system(cmd))
+            end
+
+            -- current base (gitsigns internal)
+            local cache = require("gitsigns.cache").cache
+            local entry = cache[bufnr]
+            local current_base = (entry and entry.git_obj and entry.git_obj.revision) or "index"
+
+            -- if we're already using a custom base, toggle back to index
+            if current_base ~= "index" then
+              gs.change_base(nil) -- reset to index
+              vim.notify("Gitsigns base → index")
+              return
+            end
+
+            local upstream = git("git rev-parse --abbrev-ref @{upstream} 2>&1")
+
+            if upstream:match("^fatal: HEAD does not point to a branch") then
+              upstream = "HEAD~"
+            elseif upstream:match("^origin/") then
+              upstream = "main"
+            else
+              upstream = git("git merge-base @{u} HEAD 2>&1")
+              if upstream:match("^fatal:") or upstream == "" then
+                upstream = "HEAD~"
+              end
+            end
+
+            gs.change_base(upstream)
+            vim.notify("Gitsigns base → " .. upstream)
+          end, { desc = "Gitsigns: change base (smart)" })
         end
       }
     end
