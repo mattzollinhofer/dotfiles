@@ -1142,6 +1142,14 @@ vim.keymap.set('n','gr','gT', { nowait = true, desc='Prev tab' })
 -- vim.keymap.set('n','gr'', { nowait = true, desc='Prev tab' })
 vim.keymap.set('n','<Leader>ll','<C-^>',{desc='Last-file'})
 
+-- prr: make gf work by stripping a/ b/ prefix from diff paths
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "prr",
+  callback = function()
+    vim.opt_local.includeexpr = "substitute(v:fname,'^[abi]/','','')"
+  end,
+})
+
 -- prr
 -- "Automatically set up highlighting for `.prr` review files
 -- "Use `:hi` to see the various definitions we kinda abuse here augroup Prr
