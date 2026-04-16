@@ -1,0 +1,6 @@
+#!/bin/bash
+# Launcher: captures pane content, then opens the URL picker in a popup.
+# Called via tmux run-shell which expands #{pane_id}.
+pane_id="$1"
+tmux capture-pane -p -t "$pane_id" -S -200 > /tmp/tmux-url-pane
+tmux display-popup -E "$HOME/.config/tmux/scripts/tmux-url-open /tmp/tmux-url-pane"

@@ -1,0 +1,16 @@
+#!/bin/bash
+# URL opener for tmux — extracts URLs from pane content and opens via fzf.
+pane_file="${1:?Usage: tmux-url-open <pane-content-file>}"
+
+url=$(grep -oE 'https?://[^[:space:]"<>'"'"']+' "$pane_file" \
+  | awk '{lines[NR]=$0} END{for(i=NR;i>0;i--) if(!seen[lines[i]]++) print lines[i]}' \
+  | fzf --no-sort --layout=reverse --prompt="Open URL: " \
+        --jump-labels='ASDFGHJKLQWERTYUIOPZXCVBNM' \
+        --bind='ctrl-f:jump' \
+        --bind='jump:accept' \
+        --bind='jump-cancel:unbind(load)' \
+        --header='Enter=open first, Ctrl-F=jump labels')
+
+if [ -n "$url" ]; then
+  open "$url"
+fi

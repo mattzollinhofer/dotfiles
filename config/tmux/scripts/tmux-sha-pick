@@ -1,0 +1,33 @@
+#!/bin/bash
+# SHA picker for tmux — extracts git commit SHAs from pane content,
+# validates them against the actual repo, lets you pick via fzf, copies to clipboard.
+pane_file="${1:?Usage: tmux-sha-pick <pane-content-file> [repo-dir]}"
+repo_dir="${2:-.}"
+
+cd "$repo_dir" || exit 1
+
+# Strip ANSI escape codes, split into whitespace-delimited tokens,
+# keep only tokens that are purely 7-40 hex chars (not pure decimal).
+sha=$(sed 's/\x1b\[[0-9;]*m//g' "$pane_file" \
+  | tr -s '[:space:]' '\n' \
+  | grep -xE '[0-9a-f]{7,40}' \
+  | grep -v '^[0-9]*$' \
+  | awk '{lines[NR]=$0} END{for(i=NR;i>0;i--) if(!seen[lines[i]]++) print lines[i]}' \
+  | while read -r candidate; do
+      if git cat-file -t "$candidate" 2>/dev/null | grep -q commit; then
+        echo "$candidate"
+      fi
+    done \
+  | fzf --no-sort --layout=reverse --prompt="Copy SHA: " \
+        --jump-labels='ASDFGHJKLQWERTYUIOPZXCVBNM' \
+        --bind='ctrl-f:jump' \
+        --bind='jump:accept' \
+        --bind='jump-cancel:unbind(load)' \
+        --header='Enter=copy, Ctrl-F=jump labels' \
+        --preview="git show --stat --color=always {}" \
+        --preview-window=right:50%)
+
+if [ -n "$sha" ]; then
+  printf '%s' "$sha" | pbcopy
+  tmux display-message "Copied: $sha"
+fi

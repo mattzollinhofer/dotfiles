@@ -1,0 +1,7 @@
+#!/bin/bash
+# Launcher: captures pane content, then opens the SHA picker in a popup.
+# Called via tmux run-shell which expands #{pane_id}.
+pane_id="$1"
+pane_path=$(tmux display-message -t "$pane_id" -p '#{pane_current_path}')
+tmux capture-pane -p -t "$pane_id" -S -200 > /tmp/tmux-sha-pane
+tmux display-popup -E "$HOME/.config/tmux/scripts/tmux-sha-pick /tmp/tmux-sha-pane '$pane_path'"
