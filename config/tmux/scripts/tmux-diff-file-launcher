@@ -1,0 +1,6 @@
+#!/bin/bash
+# Launcher: captures visible pane content, then opens the diff file picker in a popup.
+# Called via tmux run-shell which expands #{pane_id}.
+pane_id="$1"
+tmux capture-pane -p -t "$pane_id" > /tmp/tmux-diff-file-pane
+tmux display-popup -E "$HOME/.config/tmux/scripts/tmux-diff-file-pick /tmp/tmux-diff-file-pane"

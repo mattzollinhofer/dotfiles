@@ -1,0 +1,48 @@
+#!/bin/bash
+# Diff file picker for tmux — extracts file paths from diff output on screen,
+# lets you pick via fzf, copies to clipboard (no trailing newline).
+pane_file="${1:?Usage: tmux-diff-file-pick <pane-content-file>}"
+
+# Strip ANSI escape codes, then extract filenames from common diff formats:
+#   Δ path/to/file
+#   diff --git a/path b/path
+#   --- a/path
+#   +++ b/path
+#   added: path/to/file
+#   deleted: path/to/file
+#   renamed: old -> new
+#   git status lines:
+#     modified:   path/to/file
+#     new file:   path/to/file
+#     deleted:    path/to/file
+#     renamed:    old -> new
+#     untracked (tab-indented bare path under "Untracked files:")
+file=$(sed 's/\x1b\[[0-9;]*m//g' "$pane_file" \
+  | sed -n \
+    -e 's/^.*Δ \(.*\)/\1/p' \
+    -e 's/^diff --git a\/.* b\/\(.*\)/\1/p' \
+    -e 's/^+++ b\/\(.*\)/\1/p' \
+    -e 's/^--- a\/\(.*\)/\1/p' \
+    -e 's/^added: \(.*\)/\1/p' \
+    -e 's/^deleted: \(.*\)/\1/p' \
+    -e 's/^renamed: .* -> \(.*\)/\1/p' \
+    -e 's/^[[:space:]]*modified: *\(.*\)/\1/p' \
+    -e 's/^[[:space:]]*new file: *\(.*\)/\1/p' \
+    -e 's/^[[:space:]]*deleted: *\(.*\)/\1/p' \
+    -e 's/^[[:space:]]*renamed: *.* -> \(.*\)/\1/p' \
+    -e '/^\t[^:]*$/ s/^\t\(.*\)$/\1/p' \
+  | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+  | awk '!seen[$0]++' \
+  | fzf --no-sort --multi --layout=reverse --prompt="Copy file: " \
+        --jump-labels='ASDFGHJKLQWERTYUIOPZXCVBNM' \
+        --bind='ctrl-f:jump' \
+        --bind='jump:accept' \
+        --bind='jump-cancel:unbind(load)' \
+        --bind='ctrl-a:select-all+accept' \
+        --header='Enter=copy, Ctrl-A=copy all, Ctrl-F=jump labels')
+
+if [ -n "$file" ]; then
+  result=$(echo "$file" | tr '\n' ' ' | sed 's/ $//')
+  printf '%s' "$result" | pbcopy
+  tmux display-message "Copied: $result"
+fi
