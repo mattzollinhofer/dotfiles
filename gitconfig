@@ -66,7 +66,10 @@
   commit-decoration-style = bold blue box ul
   commit-style = blue
   file-style = cyan
-  file-decoration-style = cyan ul
+  file-decoration-style = cyan ol ul
+  line-numbers = true
+  hunk-header-style = line-number cyan
+  hunk-header-decoration-style = cyan box
 [diff]
   colorMoved = default
   colorMovedWs = allow-indentation-change
