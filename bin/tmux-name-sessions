@@ -9,8 +9,20 @@ session_info=""
 for session in $(tmux list-sessions -F '#{session_name}'); do
   windows=$(tmux list-windows -t "$session" -F '  #{window_name}: #{pane_current_path} (#{pane_current_command})')
   window_count=$(tmux list-windows -t "$session" | wc -l | tr -d ' ')
+
+  # Get git branch for each window's working directory
+  branches=""
+  for dir in $(tmux list-windows -t "$session" -F '#{pane_current_path}'); do
+    branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+    if [ -n "$branch" ]; then
+      branches+="  git branch: $branch (in $dir)
+"
+    fi
+  done
+
   session_info+="Session \"$session\" ($window_count windows):
 $windows
+${branches}
 
 "
 done
@@ -19,7 +31,8 @@ prompt="You are naming tmux sessions so they can be identified after a reboot re
 
 Rules:
 - Names should be 1-2 words, lowercase, no spaces (use hyphens if needed)
-- Name based on the project or primary activity visible in the window names and directories
+- Prefer the git branch name over the directory name when naming a session
+- Name based on the project or primary activity visible in the branch names, window names, and directories
 - If most windows share a theme or project, use that as the name
 - Keep names short and memorable
 
@@ -36,21 +49,59 @@ echo ""
 
 suggestions=$(echo "$prompt" | claude --model haiku --print)
 
-echo "$suggestions"
+# Parse suggestions into arrays
+old_names=()
+new_names=()
+while IFS= read -r line; do
+  old="${line%% *->*}"
+  new="${line##*-> }"
+  if [ -n "$old" ] && [ -n "$new" ]; then
+    old_names+=("$old")
+    new_names+=("$new")
+  fi
+done <<< "$suggestions"
+
+count=${#old_names[@]}
+if [ "$count" -eq 0 ]; then
+  echo "No suggestions generated."
+  exit 0
+fi
+
+# Display numbered list
+for i in $(seq 0 $((count - 1))); do
+  echo "  $((i + 1)). ${old_names[$i]} -> ${new_names[$i]}"
+done
 echo ""
 
-# Ask before renaming
-read -r -p "Apply these renames? [y/N] " confirm
-if [[ "$confirm" =~ ^[Yy]$ ]]; then
-  while IFS= read -r line; do
-    old=$(echo "$line" | sed 's/ *-> .*//')
-    new=$(echo "$line" | sed 's/.* -> //')
-    if [ -n "$old" ] && [ -n "$new" ] && [ "$old" != "$new" ]; then
-      echo "Renaming: $old -> $new"
-      tmux rename-session -t "$old" "$new" 2>/dev/null || echo "  Failed to rename $old"
-    fi
-  done <<< "$suggestions"
-  echo "Done!"
-else
-  echo "No changes made."
-fi
+# Prompt loop
+while true; do
+  read -r -p "Apply? [y to apply, n to cancel, or number to rename]: " input </dev/tty
+  if [ "$input" = "y" ]; then
+    break
+  elif [ "$input" = "n" ]; then
+    echo "No changes made."
+    exit 0
+  elif [[ "$input" =~ ^[0-9]+$ ]] && [ "$input" -ge 1 ] && [ "$input" -le "$count" ]; then
+    idx=$((input - 1))
+    read -r -p "  ${old_names[$idx]} -> " override </dev/tty
+    new_names[idx]="$override"
+    echo ""
+    for i in $(seq 0 $((count - 1))); do
+      echo "  $((i + 1)). ${old_names[$i]} -> ${new_names[$i]}"
+    done
+    echo ""
+  else
+    echo "  Enter y, n, or a number 1-$count"
+  fi
+done
+
+# Apply renames
+renamed=0
+for i in $(seq 0 $((count - 1))); do
+  if [ "${old_names[$i]}" != "${new_names[$i]}" ]; then
+    tmux rename-session -t "${old_names[$i]}" "${new_names[$i]}" 2>/dev/null || echo "  Failed to rename ${old_names[$i]}"
+    renamed=$((renamed + 1))
+  fi
+done
+
+echo "Renamed $renamed sessions."
