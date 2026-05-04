@@ -11,6 +11,14 @@ vim.g.gutentags_ctags_tagfile = '.git/tags'
 vim.g.gutentags_exclude_filetypes = {'gitcommit', 'gitrebase', 'gitconfig'}
 vim.filetype.add({ extension = { prr = 'prr' } })
 
+-- Force .yml/.yaml to be yaml, not eruby.yaml (vim-rails sees ERB in comments)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "eruby.yaml" },
+  callback = function()
+    vim.bo.filetype = "yaml"
+  end,
+})
+
 -- bootstrap lazy.nvim -------------------------------------------------------
 local lazypath = vim.fn.stdpath('data')..'/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
