@@ -190,7 +190,6 @@ require('lazy').setup({
         )
       end
 
-      require('mini.files').setup()
       require('mini.comment').setup()
       require('mini.surround').setup()
       require('mini.pick').setup()
@@ -1123,10 +1122,6 @@ end, { desc = 'Find files (git)' })
 vim.keymap.set('n','<Leader>fh', function()
   pcall(require('telescope.builtin').help_tags)  -- fast git index  
 end, { desc = 'Find files (git)' })
-vim.keymap.set('n', '<Leader>mf', function()
-  require('mini.files').open(vim.api.nvim_buf_get_name(0))
-end, { desc = 'Open current file in mini.files' })
-
 -- Folding Support
 vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
