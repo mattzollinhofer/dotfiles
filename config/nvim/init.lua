@@ -672,7 +672,17 @@ require('lazy').setup({
       }
     end,
   },
-  
+
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("treesitter-context").setup {
+        max_lines = 8,
+      }
+    end,
+  },
+
   {
     "neovim/nvim-lspconfig",
     config = function()
