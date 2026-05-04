@@ -27,6 +27,7 @@ alias grevu='git log -p --reverse @{u}..'
 alias gdM='git diff origin/main...'
 alias gdu='git diff @{u}...'
 alias gn='git --no-pager'
+alias gs2='DELTA_FEATURES=side-by-side git'
 alias glg='lazygit'
 alias ga='clear; git add -p'
 alias gap='clear; git add -p'
@@ -55,6 +56,7 @@ alias gri="git fetch; git rebase -i "
 alias grii="git fetch; git rebase -i HEAD~~~"
 alias griM="git fetch; git rebase -i origin/main"
 alias griu="git fetch; git rebase -i @{u}"
+alias grc='git rebase --continue'
 alias grC='git rebase --continue'
 alias grA='git rebase --abort'
 grH() { [ -z "$1" ] && echo "Usage: grH <commit>" && return 1; git reset --hard "$1"; }
