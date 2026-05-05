@@ -76,4 +76,4 @@
 [include]
   path = ~/.gitconfig.local
 [safe]
-	directory = /Users/z-dev/code/worktrees/zz-i18n-misc-text
+	directory = /Users/z-dev/code/worktrees/zz-sc-56872-exec-sales
