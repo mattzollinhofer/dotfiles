@@ -1,0 +1,27 @@
+#!/bin/bash
+# Reads branch + prompt input from a tmux popup, then dispatches the worker
+# script in the background so the popup closes immediately.
+#
+# Bound from tmux.conf via:
+#   bind C-w display-popup -E -w 80 -h 6 -d "#{pane_current_path}" \
+#     "~/.config/tmux/scripts/tmux-spawn-worktree-prompt"
+set -u
+
+printf 'branch (optional, zz/ added if missing): '
+IFS= read -r branch || branch=""
+printf 'prompt (optional): '
+IFS= read -r prompt || prompt=""
+
+if [ -z "${branch:-}" ] && [ -z "${prompt:-}" ]; then
+  printf '\nnothing to spawn\n'
+  sleep 0.4
+  exit 0
+fi
+
+nohup "$HOME/.config/tmux/scripts/tmux-spawn-worktree" \
+  "${branch:-}" "${prompt:-}" "$PWD" \
+  >>/tmp/tmux-spawn-worktree.log 2>&1 &
+disown || true
+
+printf '\nspawning...\n'
+sleep 0.3

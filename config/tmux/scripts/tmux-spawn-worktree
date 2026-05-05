@@ -1,0 +1,88 @@
+#!/bin/bash
+# Worker for the tmux-spawn-worktree popup. Opens a new tmux window running
+# `wtd <branch>`, waits for the worktree directory to appear, then opens a
+# right-hand split running `ccc <prompt>` (when a prompt is supplied).
+#
+# Args: <branch> <prompt> <origin_dir>
+#   branch     - optional; if empty, inferred from prompt via Claude Haiku
+#   prompt     - optional; if empty, no Claude split is opened
+#   origin_dir - working dir of the originating pane (used to resolve the
+#                worktree path with the WelcomeHome worktree script)
+#
+# Branch is always normalised to start with "zz/".
+set -u
+
+branch_in="${1:-}"
+prompt="${2:-}"
+origin_dir="${3:-$PWD}"
+
+trim() {
+  local s="$1"
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  printf '%s' "$s"
+}
+branch_in=$(trim "$branch_in")
+prompt=$(trim "$prompt")
+
+if [ -z "$branch_in" ] && [ -z "$prompt" ]; then
+  tmux display-message "tmux-spawn-worktree: empty input"
+  exit 1
+fi
+
+branch="$branch_in"
+if [ -z "$branch" ]; then
+  raw=$(claude -p "Reply with ONLY a kebab-case git branch slug (lowercase, hyphens, max 4 words, no prefix, no quotes, no explanation) for this task: $prompt" \
+        --model claude-haiku-4-5 2>/dev/null || true)
+  branch=$(printf '%s' "$raw" \
+    | tr '[:upper:]' '[:lower:]' \
+    | tr -c 'a-z0-9-\n' '-' \
+    | tr -s '-' \
+    | head -n 1 \
+    | sed 's/^-*//;s/-*$//')
+  if [ -z "$branch" ]; then
+    tmux display-message "tmux-spawn-worktree: branch inference failed"
+    exit 1
+  fi
+fi
+
+case "$branch" in
+  zz/*) ;;
+  *) branch="zz/$branch" ;;
+esac
+
+worktree_script="${WORKTREE_SCRIPT:-$HOME/code/playbook/contrib/worktrees/welcomehome-worktree}"
+path=$(cd "$origin_dir" && "$worktree_script" path "$branch" 2>/dev/null || true)
+if [ -z "$path" ]; then
+  tmux display-message "tmux-spawn-worktree: cannot resolve path for $branch"
+  exit 1
+fi
+
+display_name="${branch#zz/}"
+win_id=$(tmux new-window -P -F '#{window_id}' -n "$display_name" -c "$origin_dir")
+
+# Give the new shell a moment to finish sourcing rc files before typing.
+sleep 0.4
+branch_q=$(printf '%q' "$branch")
+tmux send-keys -t "$win_id" -l "wtd $branch_q"
+tmux send-keys -t "$win_id" Enter
+
+# Poll for the worktree dir to appear (up to 20s). git worktree add runs
+# very early in the script, so this typically clears in <1s.
+for _ in $(seq 1 200); do
+  [ -d "$path" ] && break
+  sleep 0.1
+done
+
+if [ ! -d "$path" ]; then
+  tmux display-message "tmux-spawn-worktree: timed out waiting for $path"
+  exit 1
+fi
+
+if [ -n "$prompt" ]; then
+  pane_id=$(tmux split-window -t "$win_id" -h -P -F '#{pane_id}' -c "$path")
+  sleep 0.4
+  prompt_q=$(printf '%q' "$prompt")
+  tmux send-keys -t "$pane_id" -l "ccc $prompt_q"
+  tmux send-keys -t "$pane_id" Enter
+fi
