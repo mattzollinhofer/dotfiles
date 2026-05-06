@@ -1,39 +1,45 @@
 // ==UserScript==
-// @name         Shortcut: hide story sidebar
-// @namespace    z-dev/dotfiles
+// @name         Shortcut: hide story sidebar in narrow windows
+// @namespace    https://github.com/mattzollinhofer/dotfiles
 // @match        https://app.shortcut.com/*
 // @run-at       document-end
 // @grant        GM_addStyle
-// @version      0.4-debug
-// @description  Hide the right-hand metadata column on the story view so the description fills the width.
+// @version      1.2
+// @description  Hide the metadata sidebar on Shortcut story views so the description fills the modal in narrow browser windows.
 // ==/UserScript==
 
 (function () {
   'use strict';
 
-  console.log('[shortcut-hide-sidebar] v0.4-debug loaded');
-
   GM_addStyle(`
-    /* CANARY — remove once confirmed loading. If you see a lime outline
-       around the page, the script is running and CSS injection works. */
-    body { outline: 4px solid lime !important; outline-offset: -4px !important; }
+    @media (max-width: 899px) {
+      .story-dialog .right-column { display: none !important; }
 
-    /* Try several selector shapes; whichever matches wins. */
-    .right-column.r_react,
-    .story-dialog .right-column,
-    .modal-dialog .right-column {
-      display: none !important;
-    }
+      /* Constrain the modal and its wrappers to the available viewport
+         instead of their intrinsic widths. */
+      .scrollable-content,
+      .story-container,
+      .modal-dialog,
+      .story-dialog {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+      }
 
-    /* Sidebar is position:absolute, so reset margin/padding on whatever
-       holds the content so it can fill the width. */
-    .story-dialog .story-information,
-    .story-dialog .title-container,
-    .story-dialog .async-details,
-    .story-dialog .story-details,
-    .story-details .left-column {
-      margin-right: 0 !important;
-      padding-right: 0 !important;
+      /* Inner content fills the modal width. width:100% (not just
+         max-width) is needed to override narrower width rules. */
+      .story-dialog,
+      .story-dialog .story-details,
+      .story-dialog .left-column,
+      .story-dialog .title-container,
+      .story-dialog .async-details,
+      .story-dialog .story-information {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+      }
     }
   `);
 })();
