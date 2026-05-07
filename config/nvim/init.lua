@@ -875,7 +875,7 @@ require('lazy').setup({
           map('n', '<leader>hd', gitsigns.preview_hunk_inline)
           map('n', '<leader>hp', gitsigns.preview_hunk_inline)
           map('n', '<leader>hbl', gitsigns.toggle_current_line_blame)
-          map('n', '<leader>hq', gitsigns.setqflist)
+          map('n', '<leader>hq', function() gitsigns.setqflist('all') end)
 
           map('v', '<leader>hs', function()
             gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
@@ -1020,7 +1020,7 @@ require('lazy').setup({
 vim.keymap.set('n', '<Leader>w', ':w<CR>', { silent = true, desc = 'Save buffer' })
 vim.keymap.set('n', '<Leader>we ', ':w<CR>', { silent = true, desc = 'Save buffer' })
 vim.keymap.set('n', '<Leader>w<space>', ':w<CR>', { silent = true, desc = 'Save buffer' })
-vim.keymap.set('n','<Leader>q', ':q<CR>', { silent=true })		
+vim.keymap.set('n','<Leader>q', ':q<CR>', { silent=true })
 vim.keymap.set('n','<Leader>wq', ':wq<CR>',{ silent=true })
 vim.keymap.set('n','<Leader><Leader>', ':nohlsearch<CR>', { silent=true, desc = 'Unhighlight' })
 vim.api.nvim_create_autocmd('FocusLost', { command = 'silent! wa' })
