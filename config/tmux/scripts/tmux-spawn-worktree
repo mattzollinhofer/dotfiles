@@ -1,16 +1,24 @@
 #!/bin/bash
 # Worker for the tmux-spawn-worktree popup. Opens a new tmux window running
-# `wtd <branch>`, waits for the worktree directory to appear, then opens a
-# right-hand split running `ccc <prompt>` (when a prompt is supplied).
+# `wtd <branch>`, waits for the worktree directory to appear, then either:
+#   - chat mode: opens a right-hand split running `ccc <prompt>`
+#   - plan mode: opens a right-hand region split into two `ccc` panes, one
+#     running `/whs-plan <prompt>` and the other running `/plan <prompt>`
 #
-# Args: <branch> <prompt> <origin_dir>
+# Args: [--mode chat|plan] <branch> <prompt> <origin_dir>
 #   branch     - optional; if empty, inferred from prompt via Claude Haiku
-#   prompt     - optional; if empty, no Claude split is opened
+#   prompt     - optional in chat, required in plan
 #   origin_dir - working dir of the originating pane (used to resolve the
 #                worktree path with the WelcomeHome worktree script)
 #
 # Branch is always normalised to start with "zz/".
 set -u
+
+mode="chat"
+if [ "${1:-}" = "--mode" ]; then
+  mode="${2:-chat}"
+  shift 2
+fi
 
 branch_in="${1:-}"
 prompt="${2:-}"
@@ -79,10 +87,29 @@ if [ ! -d "$path" ]; then
   exit 1
 fi
 
-if [ -n "$prompt" ]; then
-  pane_id=$(tmux split-window -t "$win_id" -h -P -F '#{pane_id}' -c "$path")
+launch_ccc_pane() {
+  local pane="$1" message="$2"
+  local message_q
+  message_q=$(printf '%q' "$message")
+  tmux send-keys -t "$pane" -l "ccc $message_q"
+  tmux send-keys -t "$pane" Enter
+}
+
+if [ "$mode" = "plan" ]; then
+  if [ -z "$prompt" ]; then
+    tmux display-message "tmux-spawn-worktree: plan mode requires a prompt"
+    exit 1
+  fi
+  # Right region (75%) split into two equal panes for the two plan commands.
+  whs_pane=$(tmux split-window -t "$win_id" -h -l 75% -c "$path" -P -F '#{pane_id}')
+  cloud_pane=$(tmux split-window -t "$whs_pane" -h -l 50% -c "$path" -P -F '#{pane_id}')
   sleep 0.4
-  prompt_q=$(printf '%q' "$prompt")
-  tmux send-keys -t "$pane_id" -l "ccc $prompt_q"
-  tmux send-keys -t "$pane_id" Enter
+  launch_ccc_pane "$whs_pane" "/whs-plan $prompt"
+  launch_ccc_pane "$cloud_pane" "/plan $prompt"
+else
+  if [ -n "$prompt" ]; then
+    chat_pane=$(tmux split-window -t "$win_id" -h -P -F '#{pane_id}' -c "$path")
+    sleep 0.4
+    launch_ccc_pane "$chat_pane" "$prompt"
+  fi
 fi

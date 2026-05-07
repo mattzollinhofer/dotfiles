@@ -2,14 +2,27 @@
 # Reads branch + prompt input from a tmux popup, then dispatches the worker
 # script in the background so the popup closes immediately.
 #
+# Args: [mode]   mode is `chat` (default) or `plan`.
+#
 # Bound from tmux.conf via:
-#   bind C-w display-popup -E -w 80 -h 6 -d "#{pane_current_path}" \
-#     "~/.config/tmux/scripts/tmux-spawn-worktree-prompt"
+#   bind C-w display-popup -E ... "...tmux-spawn-worktree-prompt"        # chat
+#   bind p   display-popup -E ... "...tmux-spawn-worktree-prompt plan"   # plan
 set -u
 
-printf 'branch (optional, zz/ added if missing): '
+mode="${1:-chat}"
+
+if [ "$mode" = "plan" ]; then
+  printf '[plan mode] branch (optional, zz/ added if missing): '
+else
+  printf 'branch (optional, zz/ added if missing): '
+fi
 IFS= read -r branch || branch=""
-printf 'prompt (optional): '
+
+if [ "$mode" = "plan" ]; then
+  printf 'plan topic / prompt: '
+else
+  printf 'prompt (optional): '
+fi
 IFS= read -r prompt || prompt=""
 
 if [ -z "${branch:-}" ] && [ -z "${prompt:-}" ]; then
@@ -18,8 +31,14 @@ if [ -z "${branch:-}" ] && [ -z "${prompt:-}" ]; then
   exit 0
 fi
 
+if [ "$mode" = "plan" ] && [ -z "${prompt:-}" ]; then
+  printf '\nplan mode requires a prompt\n'
+  sleep 0.6
+  exit 0
+fi
+
 nohup "$HOME/.config/tmux/scripts/tmux-spawn-worktree" \
-  "${branch:-}" "${prompt:-}" "$PWD" \
+  --mode "$mode" "${branch:-}" "${prompt:-}" "$PWD" \
   >>/tmp/tmux-spawn-worktree.log 2>&1 &
 disown || true
 
