@@ -25,7 +25,7 @@ PROJECT_DIRS='app|bin|config|db|docs|lib|log|node_modules|public|spec|storage|sw
 plain=$(sed 's/\x1b\[[0-9;]*m//g' "$pane_file")
 file=$({
   printf '%s\n' "$plain" | sed -n \
-    -e 's/^.*Δ \(.*\)/\1/p' \
+    -e 's/^Δ \(.*\)/\1/p' \
     -e 's/^diff --git a\/.* b\/\(.*\)/\1/p' \
     -e 's/^+++ b\/\(.*\)/\1/p' \
     -e 's/^--- a\/\(.*\)/\1/p' \
