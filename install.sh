@@ -98,6 +98,7 @@ if command -v brew &>/dev/null; then
         "tmux"
         "atuin"
         "gh"
+        "git-delta"
     )
 
     CASKS=(
