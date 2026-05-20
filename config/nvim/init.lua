@@ -214,6 +214,11 @@ require('lazy').setup({
       end
       require('nvim-tree').setup({
         on_attach = on_attach,
+        actions = {
+          open_file = {
+            resize_window = false,
+          },
+        },
       })
       vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { desc = 'Toggle file tree' })
       vim.keymap.set('n', '<leader>nt', ':NvimTreeToggle<CR>', { desc = 'Toggle file tree' })
