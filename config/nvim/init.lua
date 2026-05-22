@@ -285,8 +285,9 @@ require('lazy').setup({
         float = { border = "rounded", source = "if_many", focusable = false },
       })
 
-      -- Match float colors to Catppuccin
-      vim.api.nvim_set_hl(0, "NormalFloat", { link = "Normal" })
+      -- Match float colors to Catppuccin — link NormalFloat to Pmenu so float
+      -- windows have a distinct background from the buffer (else hover blends in).
+      vim.api.nvim_set_hl(0, "NormalFloat", { link = "Pmenu" })
       vim.api.nvim_set_hl(0, "FloatBorder", { link = "FloatTitle" })
       -- Optional soft transparency
       vim.o.winblend = 0
