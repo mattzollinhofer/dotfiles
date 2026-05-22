@@ -1,0 +1,13 @@
+#!/bin/bash
+# Re-export Spaceman preferences into the dotfiles repo.
+# Run this after changing Spaceman settings (shortcuts, decoration, space names, etc.)
+# so the next `install.sh` on another machine picks them up.
+set -e
+
+DEST="$HOME/.dotfiles/config/spaceman/preferences.plist"
+mkdir -p "$(dirname "$DEST")"
+
+defaults export dev.ruittenb.Spaceman "$DEST"
+plutil -convert xml1 "$DEST"
+
+echo "Exported Spaceman preferences to $DEST"

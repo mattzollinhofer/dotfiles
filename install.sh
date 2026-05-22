@@ -29,6 +29,10 @@ create_symlink() {
     ln -s "$source" "$target"
 }
 
+is_macos() {
+    [ "$(uname -s)" = "Darwin" ]
+}
+
 # Ensure .config directory exists
 mkdir -p "$CONFIG_DIR"
 
@@ -101,13 +105,8 @@ if command -v brew &>/dev/null; then
         "git-delta"
     )
 
-    CASKS=(
-        "font-meslo-lg-nerd-font"
-    )
-
     # Get list of installed packages once
     INSTALLED_PACKAGES=$(brew list --formula -1)
-    INSTALLED_CASKS=$(brew list --cask -1)
 
     # Check regular packages
     TO_INSTALL=()
@@ -125,20 +124,30 @@ if command -v brew &>/dev/null; then
         brew install "${TO_INSTALL[@]}"
     fi
 
-    # Check casks
-    TO_INSTALL_CASKS=()
-    for cask in "${CASKS[@]}"; do
-        if ! echo "$INSTALLED_CASKS" | grep -q "^${cask}$"; then
-            TO_INSTALL_CASKS+=("$cask")
-        else
-            echo "$cask already installed"
-        fi
-    done
+    # Casks are macOS-only (linuxbrew does not support them)
+    if is_macos; then
+        CASKS=(
+            "font-meslo-lg-nerd-font"
+            "spaceman"
+        )
 
-    # Install missing casks in one command
-    if [ ${#TO_INSTALL_CASKS[@]} -gt 0 ]; then
-        echo "Installing casks: ${TO_INSTALL_CASKS[*]}"
-        brew install --cask "${TO_INSTALL_CASKS[@]}"
+        # Spaceman lives in a third-party tap; tap is idempotent
+        brew tap ruittenb/tap
+
+        INSTALLED_CASKS=$(brew list --cask -1)
+        TO_INSTALL_CASKS=()
+        for cask in "${CASKS[@]}"; do
+            if ! echo "$INSTALLED_CASKS" | grep -q "^${cask}$"; then
+                TO_INSTALL_CASKS+=("$cask")
+            else
+                echo "$cask already installed"
+            fi
+        done
+
+        if [ ${#TO_INSTALL_CASKS[@]} -gt 0 ]; then
+            echo "Installing casks: ${TO_INSTALL_CASKS[*]}"
+            brew install --cask "${TO_INSTALL_CASKS[@]}"
+        fi
     fi
 else
     echo "Warning: Homebrew not found. Skipping package installation."
@@ -191,6 +200,15 @@ if [ -d "$HEX_CONTAINER" ]; then
     echo "Hex settings restored"
 else
     echo "Hex app container not found, skipping (install Hex first: brew install --cask kitlangton-hex)"
+fi
+
+# Import Spaceman preferences (macOS-only menu bar app)
+# Update the stored plist with: ~/bin/spaceman-export
+if is_macos && [ -f "$DOTFILES_DIR/config/spaceman/preferences.plist" ]; then
+    echo ""
+    echo "Importing Spaceman preferences..."
+    defaults import dev.ruittenb.Spaceman "$DOTFILES_DIR/config/spaceman/preferences.plist"
+    echo "Spaceman preferences imported"
 fi
 
 # Symlink personal scripts

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeyboardShortcuts_preferences</key>
+	<string>{"carbonModifiers":6400,"carbonKeyCode":35}</string>
+	<key>KeyboardShortcuts_quickRename</key>
+	<string>{"carbonModifiers":6400,"carbonKeyCode":45}</string>
+	<key>KeyboardShortcuts_refresh</key>
+	<string>{"carbonModifiers":6400,"carbonKeyCode":15}</string>
+	<key>NSSplitView Subview Frames NSColorPanelSplitView</key>
+	<array>
+		<string>0.000000, 0.000000, 230.000000, 262.000000, NO, NO</string>
+		<string>0.000000, 263.000000, 230.000000, 67.000000, NO, NO</string>
+	</array>
+	<key>NSToolbar Configuration com.apple.NSColorPanel</key>
+	<dict>
+		<key>TB Is Shown</key>
+		<integer>1</integer>
+	</dict>
+	<key>NSWindow Frame NSColorPanel</key>
+	<string>1728 -383 250 297 1728 -483 3840 1570 </string>
+	<key>NSWindow Frame SUUpdateAlert2</key>
+	<string>3363 393 569 402 1728 -483 3840 1570 </string>
+	<key>SUAutomaticallyUpdate</key>
+	<false/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUHasLaunchedBefore</key>
+	<true/>
+	<key>SULastCheckTime</key>
+	<date>2026-05-21T15:04:02Z</date>
+	<key>SUSendProfileInfo</key>
+	<false/>
+	<key>SUUpdateGroupIdentifier</key>
+	<integer>72478247</integer>
+	<key>autoRefreshSpaces</key>
+	<true/>
+	<key>decorationActive</key>
+	<integer>6</integer>
+	<key>decorationInactive</key>
+	<integer>3</integer>
+	<key>displayStyle</key>
+	<integer>3</integer>
+	<key>horizontalDirection</key>
+	<integer>0</integer>
+	<key>iconSize</key>
+	<integer>2</integer>
+	<key>restartNumberingByDisplay</key>
+	<false/>
+	<key>rowLayout</key>
+	<integer>0</integer>
+	<key>spaceNames</key>
+	<data>
+	YnBsaXN0MDDaAQIDBAUGBwgJCgsZHiMoKy4yNTdUMTcxOFEzVDMyNjlUMzU1M1QzNjEz
+	VDM5ODhUNDE3NFQ0NTM0VDQ2MjBROdcMDQ4PEBESExQVFhcYE1hzcGFjZU51bVlzcGFj
+	ZU5hbWVfEBBzcGFjZUJ5RGVza3RvcElEW2Rpc3BsYXlVVUlEXxARcG9zaXRpb25PbkRp
+	c3BsYXlfEBNjdXJyZW50RGlzcGxheUluZGV4XxASY3VycmVudFNwYWNlTnVtYmVyEAhV
+	dGVzdHNROF8QJDNGNjE4QjFCLUJGMjAtNDFCRS05RTcwLTk4N0IxRUNCNUE4RRAHEALX
+	DA0ODxAREhobHB0aGhoQAVVsYXBweVExXxAkMzdEODgzMkEtMkQ2Ni0wMkNBLUI5Rjct
+	OEYzMEEzMDFCMjMw1wwNDg8QERIfICEWIhgfEAZYd29ya3RyZWVRNhAF1wwNDg8QERIk
+	JSYWJxgkEARUMDAwMlE0EAPXDA0ODxAREhcpKhYfGBdYbWluaXRlc3RRN9cMDQ4PEBES
+	LC0KFhMYLBAJVmRlc2lnbtcMDQ4PEBESLzAxFiwYLxAKVkl0ZXJtMlJGMdcMDQ4PEBES
+	GDM0FhoYGFNnZW5RMtcMDQ4PEBESJzYCFhgYJ1hhdXRvbWF0ZdcMDQ4PEBESIjg5FiQY
+	IlZzZW50cnlRNQAIAB0AIgAkACkALgAzADgAPQBCAEcASQBYAGEAawB+AIoAngC0AMkA
+	ywDRANMA+gD8AP4BDQEPARUBFwE+AU0BTwFYAVoBXAFrAW0BcgF0AXYBhQGOAZABnwGh
+	AagBtwG5AcABwwHSAdYB2AHnAfAB/wIGAAAAAAAAAgEAAAAAAAAAOgAAAAAAAAAAAAAA
+	AAAAAgg=
+	</data>
+	<key>useVariableWidth</key>
+	<false/>
+	<key>visibleSpacesMode</key>
+	<integer>0</integer>
+</dict>
+</plist>
