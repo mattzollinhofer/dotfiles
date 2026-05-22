@@ -1,7 +1,11 @@
 #!/bin/bash
 # Re-export Spaceman preferences into the dotfiles repo.
-# Run this after changing Spaceman settings (shortcuts, decoration, space names, etc.)
+# Run this after changing Spaceman settings (shortcuts, decoration, etc.)
 # so the next `install.sh` on another machine picks them up.
+#
+# Strips machine-specific and transient keys before writing, so the file is
+# safe to share across machines. spaceNames in particular contains the names
+# you've given desktops on THIS machine plus display UUIDs — not portable.
 set -e
 
 DEST="$HOME/.dotfiles/config/spaceman/preferences.plist"
@@ -9,5 +13,22 @@ mkdir -p "$(dirname "$DEST")"
 
 defaults export dev.ruittenb.Spaceman "$DEST"
 plutil -convert xml1 "$DEST"
+
+# Strip non-portable keys. Literal dots in a keypath must be backslash-escaped
+# or plutil treats them as path separators. -remove fails if absent; suppress.
+NON_PORTABLE=(
+    spaceNames
+    SUHasLaunchedBefore
+    SULastCheckTime
+    SUUpdateGroupIdentifier
+    'NSStatusItem Preferred Position Item-0'
+    'NSSplitView Subview Frames NSColorPanelSplitView'
+    'NSToolbar Configuration com\.apple\.NSColorPanel'
+    'NSWindow Frame NSColorPanel'
+    'NSWindow Frame SUUpdateAlert2'
+)
+for key in "${NON_PORTABLE[@]}"; do
+    plutil -remove "$key" "$DEST" 2>/dev/null || true
+done
 
 echo "Exported Spaceman preferences to $DEST"

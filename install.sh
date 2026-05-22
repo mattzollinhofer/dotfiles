@@ -203,11 +203,28 @@ else
 fi
 
 # Import Spaceman preferences (macOS-only menu bar app)
+# Stored plist contains only portable keys; the user's per-machine
+# spaceNames (desktop names + display UUIDs) is grafted in from the live
+# domain so re-running install.sh doesn't wipe locally named spaces.
 # Update the stored plist with: ~/bin/spaceman-export
 if is_macos && [ -f "$DOTFILES_DIR/config/spaceman/preferences.plist" ]; then
     echo ""
     echo "Importing Spaceman preferences..."
-    defaults import dev.ruittenb.Spaceman "$DOTFILES_DIR/config/spaceman/preferences.plist"
+    SPACEMAN_MERGED=$(mktemp -t spaceman-merged).plist
+    SPACEMAN_LIVE=$(mktemp -t spaceman-live).plist
+    SPACEMAN_NAMES=$(mktemp -t spaceman-names).xml
+
+    cp "$DOTFILES_DIR/config/spaceman/preferences.plist" "$SPACEMAN_MERGED"
+
+    if defaults export dev.ruittenb.Spaceman "$SPACEMAN_LIVE" 2>/dev/null \
+        && plutil -convert xml1 "$SPACEMAN_LIVE" 2>/dev/null \
+        && plutil -extract spaceNames xml1 -o "$SPACEMAN_NAMES" "$SPACEMAN_LIVE" 2>/dev/null; then
+        plutil -insert spaceNames -xml "$(cat "$SPACEMAN_NAMES")" "$SPACEMAN_MERGED"
+        echo "Preserved existing spaceNames from live preferences"
+    fi
+
+    defaults import dev.ruittenb.Spaceman "$SPACEMAN_MERGED"
+    rm -f "$SPACEMAN_MERGED" "$SPACEMAN_LIVE" "$SPACEMAN_NAMES"
     echo "Spaceman preferences imported"
 fi
 
