@@ -1442,6 +1442,7 @@ map('<leader>gss',    ':!clear; git stash save ')             -- new stash (add 
 map('<leader>gsp',    ':!clear; git stash pop stash@{ ')      -- start stash pop
 
 -- K on a git SHA: quick view with fugitive, full diff review with <leader>K
+-- Otherwise: LSP hover when a client is attached, falling back to default K (keywordprg).
 vim.keymap.set('n', 'K', function()
   local ft = vim.bo.filetype
   if ft:match('^fugitive') then
@@ -1457,10 +1458,12 @@ vim.keymap.set('n', 'K', function()
     if not ok then
       vim.notify('Gedit failed: ' .. err, vim.log.levels.WARN)
     end
+  elseif next(vim.lsp.get_clients({ bufnr = 0 })) then
+    vim.lsp.buf.hover({ border = 'rounded', max_width = 80 })
   else
     vim.api.nvim_feedkeys('K', 'ni', false)
   end
-end, { desc = 'Show commit under cursor or default K' })
+end, { desc = 'Show commit under cursor, LSP hover, or default K' })
 
 vim.keymap.set('n', '<leader>K', function()
   local word = vim.fn.expand('<cword>')
