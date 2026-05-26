@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Shrink active pane's column-siblings to min height; active absorbs the rest.
+set -euo pipefail
+
+read -r ACTIVE_LEFT ACTIVE_WIDTH < <(tmux display -p '#{pane_left} #{pane_width}')
+
+tmux list-panes -F '#{pane_id} #{pane_active} #{pane_left} #{pane_width}' \
+  | awk -v left="$ACTIVE_LEFT" -v width="$ACTIVE_WIDTH" \
+        '$2==0 && $3==left && $4==width {print $1}' \
+  | while read -r pid; do
+      tmux resize-pane -t "$pid" -y 1
+    done
+
+tmux resize-pane -y 9999

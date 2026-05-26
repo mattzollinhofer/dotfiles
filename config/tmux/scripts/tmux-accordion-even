@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Redistribute heights evenly among active pane's column-siblings only.
+set -euo pipefail
+
+read -r ACTIVE_LEFT ACTIVE_WIDTH WIN_HEIGHT < <(tmux display -p '#{pane_left} #{pane_width} #{window_height}')
+
+# Collect column-siblings in spatial top-to-bottom order.
+mapfile -t SIBLINGS < <(
+  tmux list-panes -F '#{pane_top} #{pane_id} #{pane_left} #{pane_width}' \
+    | awk -v left="$ACTIVE_LEFT" -v width="$ACTIVE_WIDTH" \
+          '$3==left && $4==width {print $1, $2}' \
+    | sort -n \
+    | awk '{print $2}'
+)
+
+COUNT=${#SIBLINGS[@]}
+[ "$COUNT" -le 1 ] && exit 0
+
+TARGET=$(( (WIN_HEIGHT - (COUNT - 1)) / COUNT ))
+
+# Two passes to converge from accordion-collapsed or other lopsided states.
+for _ in 1 2; do
+  for pid in "${SIBLINGS[@]}"; do
+    tmux resize-pane -t "$pid" -y "$TARGET"
+  done
+done
