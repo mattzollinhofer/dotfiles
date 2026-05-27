@@ -75,5 +75,3 @@
   colorMovedWs = allow-indentation-change
 [include]
   path = ~/.gitconfig.local
-[safe]
-	directory = /Users/z-dev/code/worktrees/zz-sc-56872-exec-sales

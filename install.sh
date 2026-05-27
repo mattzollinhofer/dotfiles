@@ -64,11 +64,32 @@ done
 # Symlink shell configs from root
 echo ""
 echo "Setting up shell config symlinks..."
-for file in zshrc aliases gitconfig gemrc bash_env gitignore_global p10k.zsh tmux.conf; do
+for file in zshrc aliases gemrc bash_env gitignore_global p10k.zsh tmux.conf; do
     if [ -f "$DOTFILES_DIR/$file" ]; then
         create_symlink "$DOTFILES_DIR/$file" "$HOME/.$file"
     fi
 done
+
+# ~/.gitconfig is a plain wrapper (not a symlink) so that any tool running
+# `git config --global ...` writes here instead of into the tracked dotfile.
+# The wrapper just includes the tracked config plus the per-machine local file.
+echo ""
+echo "Setting up ~/.gitconfig wrapper..."
+if [ -L "$HOME/.gitconfig" ] || [ ! -e "$HOME/.gitconfig" ]; then
+    if [ -L "$HOME/.gitconfig" ]; then
+        echo "Replacing symlinked ~/.gitconfig with wrapper file"
+        rm "$HOME/.gitconfig"
+    fi
+    cat > "$HOME/.gitconfig" <<'EOF'
+[include]
+  path = ~/.dotfiles/gitconfig
+[include]
+  path = ~/.gitconfig.local
+EOF
+    echo "Wrote ~/.gitconfig wrapper"
+else
+    echo "~/.gitconfig already exists as a plain file, leaving untouched"
+fi
 
 # Symlink agent-os directory
 echo ""
