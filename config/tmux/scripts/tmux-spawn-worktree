@@ -1,6 +1,6 @@
 #!/bin/bash
 # Worker for the tmux-spawn-worktree popup. Opens a new tmux window running
-# `wtd <branch>`, waits for the worktree directory to appear, then either:
+# `w <branch>` (worktrunk), waits for the worktree directory to appear, then:
 #   - chat mode: opens a right-hand split running `ccc <prompt>`
 #   - plan mode: opens a right-hand region split into two `ccc` panes, one
 #     running `/whs-plan <prompt>` and the other running `/plan <prompt>`
@@ -9,7 +9,7 @@
 #   branch     - optional; if empty, inferred from prompt via Claude Haiku
 #   prompt     - optional in chat, required in plan
 #   origin_dir - working dir of the originating pane (used to resolve the
-#                worktree path with the WelcomeHome worktree script)
+#                worktree path via worktrunk's path template)
 #
 # Branch is always normalised to start with "zz/".
 set -u
@@ -59,12 +59,16 @@ case "$branch" in
   *) branch="zz/$branch" ;;
 esac
 
-worktree_script="${WORKTREE_SCRIPT:-$HOME/code/playbook/contrib/worktrees/welcomehome-worktree}"
-path=$(cd "$origin_dir" && "$worktree_script" path "$branch" 2>/dev/null || true)
-if [ -z "$path" ]; then
-  tmux display-message "tmux-spawn-worktree: cannot resolve path for $branch"
+# Resolve the worktree path from worktrunk's path template:
+#   {{ repo_path }}/../worktrees/{{ repo_path | basename }}/{{ branch | sanitize }}
+# `sanitize` just replaces `/` and `\` with `-`.
+repo_path=$(cd "$origin_dir" && git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$repo_path" ]; then
+  tmux display-message "tmux-spawn-worktree: not in a git repo at $origin_dir"
   exit 1
 fi
+sanitized_branch="${branch//\//-}"
+path="$repo_path/../worktrees/$(basename "$repo_path")/$sanitized_branch"
 
 display_name="${branch#zz/}"
 win_id=$(tmux new-window -P -F '#{window_id}' -n "$display_name" -c "$origin_dir")
@@ -72,7 +76,7 @@ win_id=$(tmux new-window -P -F '#{window_id}' -n "$display_name" -c "$origin_dir
 # Give the new shell a moment to finish sourcing rc files before typing.
 sleep 0.4
 branch_q=$(printf '%q' "$branch")
-tmux send-keys -t "$win_id" -l "wtd $branch_q"
+tmux send-keys -t "$win_id" -l "w $branch_q"
 tmux send-keys -t "$win_id" Enter
 
 # Poll for the worktree dir to appear (up to 20s). git worktree add runs
