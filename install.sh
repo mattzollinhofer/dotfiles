@@ -174,6 +174,7 @@ if command -v brew &>/dev/null; then
         "git-delta"
         "powerlevel10k"
         "direnv"
+        "worktrunk"
     )
 
     # macOS-only packages
@@ -352,6 +353,19 @@ if [[ "$OS" == "Linux" && "$SHELL" != *"zsh"* ]]; then
     echo "=========================================="
 fi
 
+echo ""
+echo "=========================================="
+echo "⚠️  MANUAL STEP - Worktrunk shell wiring"
+echo "=========================================="
+echo "Worktrunk's binary is installed via brew above, but the welcomehome"
+echo "hooks and shell integration live in the playbook repo. Once playbook"
+echo "is cloned at ~/code/playbook, run:"
+echo ""
+echo "  ~/code/playbook/contrib/worktrees/install"
+echo ""
+echo "That adds the worktrunk shell integration + welcomehome hook scripts"
+echo "to ~/.zshrc.local (which is local, not tracked in dotfiles)."
+echo "=========================================="
 echo ""
 echo "=========================================="
 echo "⚠️  OPTIONAL - Ruby LSP Setup"
