@@ -15,13 +15,13 @@ if [[ "$OS" == "Linux" ]]; then
 
     if command -v apt-get &>/dev/null; then
         sudo apt-get update
-        sudo apt-get install -y build-essential curl git zsh
+        sudo apt-get install -y build-essential curl git zsh ruby-full
     elif command -v dnf &>/dev/null; then
-        sudo dnf install -y gcc make curl git zsh
+        sudo dnf install -y gcc make curl git zsh ruby
     elif command -v pacman &>/dev/null; then
-        sudo pacman -Sy --noconfirm base-devel curl git zsh
+        sudo pacman -Sy --noconfirm base-devel curl git zsh ruby
     else
-        echo "Warning: Could not detect package manager. Install zsh, curl, git, and build tools manually."
+        echo "Warning: Could not detect package manager. Install zsh, curl, git, ruby, and build tools manually."
     fi
 
     # Install Homebrew for Linux if not present
