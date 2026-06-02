@@ -173,6 +173,7 @@ if command -v brew &>/dev/null; then
         "gh"
         "git-delta"
         "powerlevel10k"
+        "direnv"
     )
 
     # macOS-only packages

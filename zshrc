@@ -1,6 +1,6 @@
 # load .envrc files in directories
 export DIRENV_LOG_FORMAT=""
-eval "$(direnv hook zsh)" 2>/dev/null
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
