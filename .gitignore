@@ -3,6 +3,7 @@ config/prr/config.toml
 config/shortcut-cli/config.json
 config/iterm2/sockets/
 config/atuin/
+config/gh/hosts.yml
 
 # Generated/cache files
 config/.ruby-lsp/
