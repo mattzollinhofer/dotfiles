@@ -3,8 +3,48 @@ set -e
 
 DOTFILES_DIR="$HOME/.dotfiles"
 CONFIG_DIR="$HOME/.config"
+OS="$(uname)"
 
 echo "Installing dotfiles from $DOTFILES_DIR"
+echo "Detected platform: $OS"
+
+# --- Linux bootstrap ---
+if [[ "$OS" == "Linux" ]]; then
+    echo ""
+    echo "Bootstrapping Linux prerequisites..."
+
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get update
+        sudo apt-get install -y build-essential curl git zsh
+    elif command -v dnf &>/dev/null; then
+        sudo dnf install -y gcc make curl git zsh
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -Sy --noconfirm base-devel curl git zsh
+    else
+        echo "Warning: Could not detect package manager. Install zsh, curl, git, and build tools manually."
+    fi
+
+    # Install Homebrew for Linux if not present
+    if ! command -v brew &>/dev/null; then
+        echo ""
+        echo "Installing Homebrew for Linux..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+    # Set zsh as default shell if not already
+    if [[ "$SHELL" != *"zsh"* ]]; then
+        echo ""
+        echo "Setting zsh as default shell..."
+        ZSH_PATH="$(which zsh)"
+        # Ensure zsh is in /etc/shells
+        if ! grep -q "$ZSH_PATH" /etc/shells; then
+            echo "$ZSH_PATH" | sudo tee -a /etc/shells
+        fi
+        chsh -s "$ZSH_PATH"
+        echo "Shell changed to zsh. Log out and back in for it to take effect."
+    fi
+fi
 
 # Backup function
 backup_if_exists() {
@@ -91,6 +131,13 @@ else
     echo "~/.gitconfig already exists as a plain file, leaving untouched"
 fi
 
+# Symlink zshenv so zsh picks up brew path in all contexts
+echo ""
+echo "Setting up zshenv symlink..."
+if [ -f "$DOTFILES_DIR/zsh/zshenv" ]; then
+    create_symlink "$DOTFILES_DIR/zsh/zshenv" "$HOME/.zshenv"
+fi
+
 # Symlink agent-os directory
 echo ""
 echo "Setting up agent-os symlink..."
@@ -102,17 +149,18 @@ fi
 echo ""
 echo "Installing Homebrew packages..."
 if command -v brew &>/dev/null; then
-    # Install GNU grep first (required by this script if bash_env alias is active)
-    if ! brew list grep &>/dev/null; then
-        echo "Installing grep..."
-        brew install grep
-    else
-        echo "grep already installed"
+    # Install GNU grep first (required on macOS for consistent behavior)
+    if [[ "$OS" == "Darwin" ]]; then
+        if ! brew list grep &>/dev/null; then
+            echo "Installing grep..."
+            brew install grep
+        else
+            echo "grep already installed"
+        fi
     fi
 
-    # Define packages and casks to install
+    # Define packages to install
     PACKAGES=(
-        "powerlevel10k"
         "neovim"
         "fzf"
         "lazygit"
@@ -124,7 +172,13 @@ if command -v brew &>/dev/null; then
         "atuin"
         "gh"
         "git-delta"
+        "powerlevel10k"
     )
+
+    # macOS-only packages
+    if [[ "$OS" == "Darwin" ]]; then
+        PACKAGES+=("gnu-sed" "coreutils" "util-linux")
+    fi
 
     # Get list of installed packages once
     INSTALLED_PACKAGES=$(brew list --formula -1)
@@ -175,9 +229,9 @@ else
     echo "Please install Homebrew from https://brew.sh"
 fi
 
-# Check for Xcode Command Line Tools
+# Check for build tools (Xcode on macOS, build-essential on Linux)
 echo ""
-if ! command -v make &>/dev/null; then
+if [[ "$OS" == "Darwin" ]] && ! command -v make &>/dev/null; then
     echo "=========================================="
     echo "⚠️  WARNING: Xcode Command Line Tools Missing"
     echo "=========================================="
@@ -263,23 +317,34 @@ done
 echo ""
 echo "Done! Dotfiles installed."
 echo "Note: Some configs (prr, shortcut-cli) are excluded for security."
-echo ""
-echo "=========================================="
-echo "⚠️  MANUAL STEP REQUIRED - iTerm2 Setup"
-echo "=========================================="
-echo "1. Import color scheme:"
-echo "   - Preferences (Cmd + ,) → Profiles → Colors → Color Presets → Import"
-echo "   - Select: ~/.dotfiles/config/iterm2/dev-iterm-profile.itermcolors"
-echo ""
-echo "2. Set font (for icons in prompt):"
-echo "   - Profiles → Text → Font"
-echo "   - Select: 'MesloLGS Nerd Font Mono' (size 12-14)"
-echo ""
-echo "Terminal.app users:"
-echo "  1. Go to Preferences (Cmd + ,)"
-echo "  2. Go to Profiles → Font → Change"
-echo "  3. Search for 'MesloLGS' and select 'MesloLGS Nerd Font Mono'"
-echo "=========================================="
+
+if [[ "$OS" == "Darwin" ]]; then
+    echo ""
+    echo "=========================================="
+    echo "⚠️  MANUAL STEP REQUIRED - iTerm2 Setup"
+    echo "=========================================="
+    echo "1. Import color scheme:"
+    echo "   - Preferences (Cmd + ,) → Profiles → Colors → Color Presets → Import"
+    echo "   - Select: ~/.dotfiles/config/iterm2/dev-iterm-profile.itermcolors"
+    echo ""
+    echo "2. Set font (for icons in prompt):"
+    echo "   - Profiles → Text → Font"
+    echo "   - Select: 'MesloLGS Nerd Font Mono' (size 12-14)"
+    echo ""
+    echo "Terminal.app users:"
+    echo "  1. Go to Preferences (Cmd + ,)"
+    echo "  2. Go to Profiles → Font → Change"
+    echo "  3. Search for 'MesloLGS' and select 'MesloLGS Nerd Font Mono'"
+    echo "=========================================="
+fi
+
+if [[ "$OS" == "Linux" && "$SHELL" != *"zsh"* ]]; then
+    echo ""
+    echo "=========================================="
+    echo "IMPORTANT: Log out and back in to use zsh"
+    echo "=========================================="
+fi
+
 echo ""
 echo "=========================================="
 echo "⚠️  OPTIONAL - Ruby LSP Setup"

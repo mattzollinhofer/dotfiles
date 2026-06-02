@@ -1,7 +1,9 @@
 # Enable aliases in bash (not needed in zsh)
 [[ -n "$BASH_VERSION" ]] && shopt -s expand_aliases
 
-# Use GNU tools instead of mac defaults
-alias grep='ggrep'
-alias date='gdate'
-alias awk='gawk'
+# Use GNU tools instead of mac defaults (Linux already has GNU tools natively)
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias grep='ggrep'
+    alias date='gdate'
+    alias awk='gawk'
+fi
