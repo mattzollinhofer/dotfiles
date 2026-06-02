@@ -1,0 +1,5 @@
+#!/bin/sh
+# Strip forwarded ssh-agent socket so bot sessions can't use the user's
+# personal key (forwarded via -A into the interactive SSH session).
+# Only installed on hostnames matching *claw* — see install.sh.
+exec env -u SSH_AUTH_SOCK /home/linuxbrew/.linuxbrew/bin/claude "$@"

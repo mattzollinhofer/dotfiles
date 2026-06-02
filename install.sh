@@ -310,6 +310,12 @@ mkdir -p "$HOME/bin"
 for file in "$DOTFILES_DIR"/bin/*; do
     if [ -f "$file" ]; then
         filename=$(basename "$file")
+        # claude wrapper strips SSH_AUTH_SOCK for bot containment; only
+        # needed on shared boxes where the user SSHes in with agent
+        # forwarding. Skip on personal machines.
+        if [ "$filename" = "claude" ] && [[ "$(hostname)" != *claw* ]]; then
+            continue
+        fi
         create_symlink "$file" "$HOME/bin/$filename"
     fi
 done
