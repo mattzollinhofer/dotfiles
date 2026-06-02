@@ -958,7 +958,7 @@ require('lazy').setup({
   {
     "iamcco/markdown-preview.nvim",
     ft = "markdown",
-    build = "cd app && npm install",
+    build = ":call mkdp#util#install()",
     config = function()
       vim.g.mkdp_combine_preview = 1
       vim.g.mkdp_auto_close = 0  -- Required when using combine_preview
