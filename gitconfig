@@ -70,8 +70,13 @@
   line-numbers = true
   hunk-header-style = line-number cyan
   hunk-header-decoration-style = cyan box
+  minus-emph-style = "#4c4f69" "#e5a2b3"
+  plus-emph-style = "#4c4f69" "#b2d5ae"
+  map-styles = bold purple => syntax "#dccdf3", bold cyan => syntax "#c0e1f1", bold yellow => syntax "#fff5d6", bold blue => syntax "#f2d2c1"
 [diff]
   colorMoved = default
   colorMovedWs = allow-indentation-change
+[include]
+  path = ~/.dotfiles/delta-catppuccin.gitconfig
 [include]
   path = ~/.gitconfig.local
