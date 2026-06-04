@@ -15,6 +15,8 @@
   p = pull
   fwl = push --force-with-lease
   d = diff
+  d1 = diff @{1}
+  rd = range-diff @{1}@{u}..@{1} @{u}..
   br = branch
   review = log -p
   ds = diff --staged
