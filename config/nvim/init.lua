@@ -1471,6 +1471,18 @@ vim.keymap.set('n', '<leader>K', function()
     vim.cmd('DiffviewOpen ' .. word .. '^!')
   end
 end, { desc = 'Diffview for commit under cursor' })
+
+-- gK on a git SHA: open the commit in a terminal buffer so it renders through
+-- delta. Git only invokes its pager when stdout is a TTY, which a fugitive
+-- buffer is not -- a terminal buffer is, so this matches the CLI exactly.
+vim.keymap.set('n', 'gK', function()
+  local word = vim.fn.expand('<cword>')
+  if word:match('^%x%x%x%x%x%x+$') and not word:match('^%d+$') then
+    vim.cmd('tabnew')
+    vim.cmd('terminal git show ' .. word)
+    vim.cmd('startinsert')
+  end
+end, { desc = 'Show commit under cursor through delta (terminal)' })
 -- ============================================================================
 
 -- AnsiEsc: automatically process ANSI escape codes in log files
