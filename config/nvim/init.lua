@@ -1294,7 +1294,7 @@ vim.keymap.set('n','<Leader>vg',':tabnew $MYVIMRC<CR>')
 vim.keymap.set('n','<Leader>va',':tabnew ~/.aliases<CR>')
 vim.keymap.set('n','<Leader>vz',':tabnew ~/.zshrc<CR>')
 vim.keymap.set('n','<Leader>vt',':tabnew ~/.tmux.conf<CR>')
-vim.keymap.set('n','<Leader>vg',':tabnew ~/.gitconfig<CR>')
+vim.keymap.set('n','<Leader>vg',':tabnew ~/.dotfiles/gitconfig<CR>')
 
 -- Backup/swp files disable
 vim.opt.backup = false; vim.opt.writebackup = false; vim.opt.swapfile = false
