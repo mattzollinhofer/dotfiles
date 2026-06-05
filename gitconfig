@@ -32,6 +32,8 @@
   delete-others-branches = !git others-branches | xargs git branch --delete --force
   test-branches = !git branch | grep -e 'asdf' -e 'foo' -e 'z-test'
   delete-test-branches = !git test-branches | xargs git branch --delete --force
+  matching-branches = "!f() { git branch --list \"$1\"; }; f"
+  delete-matching-branches = "!f() { git branch --list --format=\"%(refname:short)\" \"$1\" | xargs -r git branch --delete --force; }; f"
 [init]
   defaultBranch = main
 [gc]
