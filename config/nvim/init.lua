@@ -1048,16 +1048,31 @@ vim.keymap.set('n', '<leader>cf', function()
   vim.notify('Copied file contents to clipboard', vim.log.levels.INFO)
 end, { desc = 'Copy file contents to clipboard' })
 
--- copy filename to system clipboard
+-- path of the current file relative to its git repo root.
+-- expand('%') alone returns the buffer name as stored, which is absolute when a
+-- plugin (e.g. vim-rails :AV) opened the file via an absolute path, so we derive
+-- it from the full path instead. Falls back to cwd-relative outside a repo.
+local function repo_relative_path()
+  local absolute = vim.fn.expand('%:p')
+  local git_root = vim.fn.systemlist(
+    'git -C ' .. vim.fn.shellescape(vim.fn.expand('%:p:h')) .. ' rev-parse --show-toplevel'
+  )[1]
+  if vim.v.shell_error == 0 and git_root and git_root ~= '' then
+    return absolute:gsub('^' .. vim.pesc(git_root) .. '/', '')
+  end
+  return vim.fn.expand('%:.')
+end
+
+-- copy filename to system clipboard (repo relative)
 vim.keymap.set('n', '<leader>cpr', function()
-  local fname = vim.fn.expand('%')
+  local fname = repo_relative_path()
   vim.fn.setreg('+', fname)
   vim.notify('Copied filename: ' .. fname, vim.log.levels.INFO)
 end, { noremap = true, silent = true, desc = 'Copy current filename' })
 
 -- copy filename + line number (repo relative) to system clipboard
 vim.keymap.set('n', '<leader>cpl', function()
-  local fname = vim.fn.expand('%')
+  local fname = repo_relative_path()
   local lnum  = vim.fn.line('.')
   local out   = fname .. ':' .. lnum
   vim.fn.setreg('+', out)
