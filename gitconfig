@@ -1,6 +1,7 @@
 [alias]
   s = status
   st = status
+  sh = show
   stat = show --stat
   checkout-fuzzy = "!git br | fzf | xargs git checkout"
   cf = checkout-fuzzy
