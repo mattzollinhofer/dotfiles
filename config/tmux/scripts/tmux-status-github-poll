@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# tmux-status-github-poll
+#
+# Polls GitHub and writes a status fragment that tmux-status-render consumes.
+# Run by launchd (com.local.tmux-status-github) every 60s.
+#
+# This is the only network-touching layer. It never talks to tmux except to nudge
+# a single refresh after the counts actually change. The fragment file is the
+# source of truth; render and tmux only ever read it, so the status hot path can
+# never block on the network.
+#
+# Two sources, deliberately:
+#   - review_requested comes from `gh search prs` (mirrors playbook's `prs me`):
+#     OPEN PRs in the work org where my review is requested. This is the live,
+#     actionable queue.
+#   - mention / comment / assign come from the /notifications inbox.
+#
+# Why split: /notifications is an UNREAD-INBOX model. A review_requested thread
+# sits there until you manually mark it read in GitHub's UI, so it drifts to
+# closed/merged PRs and over-counts (we saw 12 notifications, 11 closed, vs a
+# real queue of ~7). Review is the one signal with a clean live source, so it
+# uses the search. mention/comment/assign have no clean open-state equivalent and
+# stay on notifications for now -- they carry the same staleness caveat (a count
+# of "unread since you last cleared your inbox"). Managing that is a TODO.
+#
+# Fragment schema (~/.cache/tmux-status/github.json):
+#   { "source": "github",
+#     "updated_at": <epoch-seconds>,   # liveness: bumped every successful poll
+#     "ok": true,
+#     "items": [ { "key": "review_requested", "count": 7 }, ... ] }
+#
+# Icons, colors, urgency and ordering are NOT in the fragment -- those are
+# presentation and live in tmux-status-render, so they change without a re-poll.
+
+set -euo pipefail
+
+# launchd hands scripts a minimal PATH; brew binaries (gh, jq, tmux) live outside
+# it. Prepend both common brew prefixes so we find them regardless of arch.
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-status"
+FRAGMENT="$CACHE_DIR/github.json"
+
+# Work org whose review queue we track. Matches playbook bin/prs.
+GITHUB_ORG="welcomehome-software"
+
+mkdir -p "$CACHE_DIR"
+
+# On any failed call we leave the last good fragment untouched. A persistently
+# dead poller ages the file out and render shows the stale marker, so one blip
+# should not blow away known-good counts.
+bail() {
+  echo "tmux-status-github-poll: $1; keeping previous fragment" >&2
+  exit 0
+}
+
+# review_requested: live queue of open PRs awaiting my review (the `prs me` query).
+# Search API rate limit is 30/min; at one poll/min this plus the call below is
+# well within budget.
+review_count="$(gh search prs --state=open --owner="$GITHUB_ORG" \
+  --review-requested=@me --json number --jq 'length' 2>/dev/null)" \
+  || bail "gh search prs failed"
+
+# mention / comment / assign: still the notifications inbox (read-once events).
+raw="$(gh api -H "Accept: application/vnd.github+json" \
+  "/notifications?per_page=50" 2>/dev/null)" \
+  || bail "gh api /notifications failed"
+
+# Fold related reasons and count each. review_requested is intentionally NOT
+# pulled from here -- it comes from the search above -- to avoid double counting.
+#   mention, team_mention -> mention
+#   comment, author       -> comment
+#   assign                -> assign
+notif_items="$(printf '%s' "$raw" | jq -c '
+  [ .[].reason
+    | if . == "team_mention" then "mention"
+      elif . == "author" then "comment"
+      else . end ]
+  | map(select(. == "mention" or . == "comment" or . == "assign"))
+  | group_by(.)
+  | map({ key: .[0], count: length })
+')"
+
+# Combine the live review count with the notification-derived items. A zero
+# review count is dropped here so render does not have to special-case it.
+items="$(jq -cn --argjson review "$review_count" --argjson notif "$notif_items" '
+  ( if $review > 0 then [{ key: "review_requested", count: $review }] else [] end )
+  + $notif
+')"
+
+now="$(date +%s)"
+
+# Read the previous item set back before we overwrite, so we can tell whether
+# anything actually changed.
+old_items="null"
+if [ -f "$FRAGMENT" ]; then
+  old_items="$(jq -c '.items' "$FRAGMENT" 2>/dev/null || echo null)"
+fi
+
+# Always rewrite the fragment so updated_at proves the poller is alive, even when
+# counts are unchanged; otherwise render would eventually think we went stale.
+jq -n --argjson items "$items" --argjson now "$now" '
+  { source: "github", updated_at: $now, ok: true, items: $items }
+' > "$FRAGMENT"
+
+# Only nudge tmux when the item set actually changed, so the new counts appear
+# within ~1s instead of waiting for the next status tick. No server running is a
+# harmless no-op.
+if [ "$items" != "$old_items" ]; then
+  tmux refresh-client -S 2>/dev/null || true
+fi

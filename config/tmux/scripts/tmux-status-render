@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# tmux-status-render
+#
+# Reads every fragment in ~/.cache/tmux-status/*.json and emits one tmux
+# status-right string. Pure local file reads, no network, so it is safe to run on
+# the status hot path every few seconds.
+#
+# All presentation lives here (icons, Catppuccin Latte colors, order, staleness),
+# so it can be changed without re-polling. This script also OWNS staleness: a
+# fragment whose updated_at is older than STALE_AFTER (poller stopped running) is
+# rendered as a dim marker instead of confidently showing old counts. A missing
+# fragment renders nothing. That fixes the failure mode of the old is-online hook,
+# which silently rendered nothing on any problem.
+
+set -euo pipefail
+
+# Match the poller: launchd / tmux may invoke us with a minimal PATH.
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-status"
+
+# Poller runs every 60s; allow ~3 missed polls before calling a source stale.
+STALE_AFTER=180
+
+# Catppuccin Latte palette (light theme).
+COLOR_REVIEW="#d20f39"   # red      - act now
+COLOR_MENTION="#1e66f5"  # blue     - someone pinged you
+COLOR_ASSIGN="#fe640b"   # peach    - assigned to you
+COLOR_COMMENT="#6c6f85"  # subtext0 - lower-signal chatter
+COLOR_STALE="#9ca0b0"    # overlay0 - dim / unknown
+
+# Nerd Font (MesloLGS NF) glyphs, emitted as UTF-8 octal so the script is portable
+# across bash versions. These are rendered content, not decoration; change freely.
+icon_for() {
+  case "$1" in
+    review_requested) printf '\357\220\207' ;;  # U+F407 git-pull-request
+    mention)          printf '\357\207\272' ;;  # U+F1FA at-sign
+    assign)           printf '\357\200\207' ;;  # U+F007 user
+    comment)          printf '\357\201\265' ;;  # U+F075 comment
+    github)           printf '\357\202\233' ;;  # U+F09B github mark (stale marker)
+    *)                printf '?' ;;
+  esac
+}
+
+color_for() {
+  case "$1" in
+    review_requested) printf '%s' "$COLOR_REVIEW" ;;
+    mention)          printf '%s' "$COLOR_MENTION" ;;
+    assign)           printf '%s' "$COLOR_ASSIGN" ;;
+    comment)          printf '%s' "$COLOR_COMMENT" ;;
+    *)                printf '%s' "$COLOR_STALE" ;;
+  esac
+}
+
+now="$(date +%s)"
+out=""
+
+render_github() {
+  local file="$1"
+  local updated ok
+  updated="$(jq -r '.updated_at // 0' "$file" 2>/dev/null || echo 0)"
+  ok="$(jq -r '.ok // false' "$file" 2>/dev/null || echo false)"
+
+  if [ "$ok" != "true" ] || [ $((now - updated)) -gt "$STALE_AFTER" ]; then
+    out="$out#[fg=$COLOR_STALE]$(icon_for github)?#[default] "
+    return
+  fi
+
+  # Stable, urgency-first order regardless of how the poller happened to list them.
+  local order="review_requested mention assign comment"
+  local key count
+  for key in $order; do
+    count="$(jq -r --arg k "$key" \
+      '(.items[] | select(.key == $k) | .count) // empty' "$file" 2>/dev/null)"
+    if [ -n "$count" ] && [ "$count" -gt 0 ] 2>/dev/null; then
+      out="$out#[fg=$(color_for "$key")]$(icon_for "$key") $count#[default] "
+    fi
+  done
+}
+
+shopt -s nullglob
+for file in "$CACHE_DIR"/*.json; do
+  case "$(basename "$file")" in
+    github.json) render_github "$file" ;;
+    # future sources (ci.json, calendar.json, ...) slot in here
+  esac
+done
+
+# Drop one trailing space so the segment butts cleanly against the next item.
+printf '%s' "${out% }"

@@ -323,6 +323,48 @@ for file in "$DOTFILES_DIR"/bin/*; do
     fi
 done
 
+# Install the tmux-status GitHub poller as a launchd agent (macOS only).
+# Mirrors the ~/.gitconfig wrapper above: we generate a real plist (not a
+# symlink) so $HOME is baked in and launchd gets the absolute script path it
+# requires. The label/schedule live here in install.sh as the source of truth.
+if is_macos; then
+    echo ""
+    echo "Setting up tmux-status launchd agent..."
+    LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
+    TMUX_STATUS_LABEL="com.local.tmux-status-github"
+    TMUX_STATUS_PLIST="$LAUNCH_AGENTS_DIR/$TMUX_STATUS_LABEL.plist"
+    TMUX_STATUS_POLLER="$HOME/.config/tmux/scripts/tmux-status-github-poll"
+    TMUX_STATUS_LOG="$HOME/.cache/tmux-status/poller.log"
+    mkdir -p "$LAUNCH_AGENTS_DIR" "$HOME/.cache/tmux-status"
+    cat > "$TMUX_STATUS_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>$TMUX_STATUS_LABEL</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$TMUX_STATUS_POLLER</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>60</integer>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$TMUX_STATUS_LOG</string>
+    <key>StandardErrorPath</key>
+    <string>$TMUX_STATUS_LOG</string>
+</dict>
+</plist>
+EOF
+    # Reload so a re-run of install.sh picks up plist changes. unload is a no-op
+    # the first time (agent not yet loaded), hence the guard.
+    launchctl unload "$TMUX_STATUS_PLIST" 2>/dev/null || true
+    launchctl load "$TMUX_STATUS_PLIST"
+    echo "Loaded $TMUX_STATUS_LABEL (polls GitHub notifications every 60s)"
+fi
+
 echo ""
 echo "Done! Dotfiles installed."
 echo "Note: Some configs (prr, shortcut-cli) are excluded for security."
