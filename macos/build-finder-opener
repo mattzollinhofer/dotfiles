@@ -1,0 +1,68 @@
+#!/bin/bash
+# build-finder-opener — build the "Open in nvim" Finder wrapper app and (if possible)
+# make it the default handler for markdown files.
+#
+# The wrapper is a tiny AppleScript app whose only job is to receive the file(s) Finder
+# hands it and pass them to ~/bin/open-in-nvim. All real logic lives in that launcher,
+# so this app stays a dumb shim. Re-run any time; it overwrites the app in place.
+#
+# Scopes its automation to iTerm only — it never touches System Events / GUI scripting.
+
+set -euo pipefail
+
+APP_NAME="Open in nvim"
+APP_DIR="$HOME/Applications"
+APP_PATH="$APP_DIR/$APP_NAME.app"
+BUNDLE_ID="com.z.open-in-nvim"
+
+mkdir -p "$APP_DIR"
+
+# AppleScript source: receive opened files, forward to the launcher by absolute path.
+SRC_DIR="$(mktemp -d)"
+SRC="$SRC_DIR/open-in-nvim.applescript"
+cat > "$SRC" <<'APPLESCRIPT'
+on open theFiles
+	set theArgs to ""
+	repeat with f in theFiles
+		set theArgs to theArgs & " " & quoted form of (POSIX path of f)
+	end repeat
+	set launcher to (POSIX path of (path to home folder)) & "bin/open-in-nvim"
+	do shell script (quoted form of launcher) & theArgs
+end open
+APPLESCRIPT
+
+rm -rf "$APP_PATH"
+osacompile -o "$APP_PATH" "$SRC"
+rm -rf "$SRC_DIR"
+
+# Give it a stable bundle id so the file association is deterministic, then re-sign
+# ad-hoc (editing Info.plist invalidates osacompile's signature → "app is damaged").
+PLIST="$APP_PATH/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$PLIST" 2>/dev/null \
+  || /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "$PLIST"
+codesign --force --sign - "$APP_PATH" >/dev/null 2>&1 || true
+
+# Register with LaunchServices so it shows up as a handler immediately.
+LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+[ -x "$LSREGISTER" ] && "$LSREGISTER" -f "$APP_PATH"
+
+echo "Built $APP_PATH"
+
+# Set the default handler for markdown. duti is the clean way; fall back to GUI steps.
+if command -v duti >/dev/null 2>&1; then
+  duti -s "$BUNDLE_ID" .md all
+  duti -s "$BUNDLE_ID" .markdown all
+  duti -s "$BUNDLE_ID" net.daringfireball.markdown all
+  echo "Set '$APP_NAME' as the default handler for .md / .markdown"
+else
+  cat <<EOF
+
+duti isn't installed, so set the association by hand (one time):
+  1. In Finder, right-click any .md file → Get Info
+  2. Open With → choose "$APP_NAME"
+  3. Click "Change All…"
+
+Or install duti and re-run this script to do it automatically:
+  brew install duti
+EOF
+fi

@@ -177,9 +177,9 @@ if command -v brew &>/dev/null; then
         "worktrunk"
     )
 
-    # macOS-only packages
+    # macOS-only packages (duti sets the .md → "Open in nvim" handler)
     if [[ "$OS" == "Darwin" ]]; then
-        PACKAGES+=("gnu-sed" "coreutils" "util-linux")
+        PACKAGES+=("gnu-sed" "coreutils" "util-linux" "duti")
     fi
 
     # Get list of installed packages once
@@ -206,6 +206,7 @@ if command -v brew &>/dev/null; then
         CASKS=(
             "font-meslo-lg-nerd-font"
             "spaceman"
+            "iterm2"
         )
 
         # Spaceman lives in a third-party tap; tap is idempotent
@@ -327,6 +328,15 @@ echo "Done! Dotfiles installed."
 echo "Note: Some configs (prr, shortcut-cli) are excluded for security."
 
 if [[ "$OS" == "Darwin" ]]; then
+    # Build the "Open in nvim" Finder wrapper so double-clicking markdown opens
+    # nvim in a fresh iTerm window instead of a GUI editor. Sets the .md association too if
+    # duti is installed; otherwise it prints the one-time Get Info steps.
+    if command -v osacompile &>/dev/null; then
+        echo ""
+        echo "Building 'Open in nvim' Finder wrapper..."
+        "$DOTFILES_DIR/macos/build-finder-opener" || true
+    fi
+
     echo ""
     echo "=========================================="
     echo "⚠️  MANUAL STEP REQUIRED - iTerm2 Setup"
@@ -343,6 +353,16 @@ if [[ "$OS" == "Darwin" ]]; then
     echo "  1. Go to Preferences (Cmd + ,)"
     echo "  2. Go to Profiles → Font → Change"
     echo "  3. Search for 'MesloLGS' and select 'MesloLGS Nerd Font Mono'"
+    echo "=========================================="
+    echo ""
+    echo "=========================================="
+    echo "⚠️  MANUAL STEP - 'Open in nvim' permission"
+    echo "=========================================="
+    echo "The .md handler is wired up automatically, but the FIRST time you"
+    echo "double-click a markdown file, macOS asks:"
+    echo "  'Open in nvim wants to control iTerm.app' → click Allow."
+    echo "This is a per-machine security grant (stored in macOS TCC), so it"
+    echo "cannot be captured in the dotfiles. One click, once."
     echo "=========================================="
 fi
 
