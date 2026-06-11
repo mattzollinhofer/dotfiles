@@ -240,6 +240,81 @@
                         ]
                     },
                     {
+                        "description": "jn/nj chord › Fn+Shift (voice)",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "j" },
+                                        { "key_code": "n" }
+                                    ],
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 100
+                                },
+                                "to": [
+                                    {
+                                        "apple_vendor_top_case_key_code": "keyboard_fn",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "fv chord › Fn+Shift (voice)",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "f" },
+                                        { "key_code": "v" }
+                                    ],
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 100
+                                },
+                                "to": [
+                                    {
+                                        "apple_vendor_top_case_key_code": "keyboard_fn",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "km chord › Fn+Shift (voice)",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "k" },
+                                        { "key_code": "m" }
+                                    ],
+                                    "simultaneous_options": {
+                                        "key_down_order": "strict"
+                                    },
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 100
+                                },
+                                "to": [
+                                    {
+                                        "apple_vendor_top_case_key_code": "keyboard_fn",
+                                        "modifiers": ["left_shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Disable cmd+m",
                         "manipulators": [
                             {
