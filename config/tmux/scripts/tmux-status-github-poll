@@ -72,6 +72,10 @@ raw="$(gh api -H "Accept: application/vnd.github+json" \
 #   mention, team_mention -> mention
 #   comment, author       -> comment
 #   assign                -> assign
+# Counts mean "still outstanding": every unread notification counts until it is
+# explicitly cleared (the popup's mark-read / clear-all actions), matching the
+# review count's stays-until-handled semantics. Glancing at the popup does NOT
+# reset these. (A look-resets-count watermark existed briefly; user reversed it.)
 notif_items="$(printf '%s' "$raw" | jq -c '
   [ .[].reason
     | if . == "team_mention" then "mention"

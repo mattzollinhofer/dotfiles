@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# tmux-github-notifications-popup
+#
+# fzf list of GitHub notifications directed at me (mention / comment / assign)
+# for use inside a tmux display-popup (prefix s c). Phase 4 of the tmux-status
+# roadmap. The preview pane shows the latest comment body for the highlighted
+# row, fetched lazily.
+#
+#   enter   open the thread in the browser (popup stays open to work the list)
+#   ctrl-d  mark the thread read on GitHub ("done"), drop it from the list
+#   ctrl-t  thumbs-up the latest comment AND mark read (acknowledge, no action)
+#   ctrl-x  mark ALL listed threads read
+#   esc     close
+#
+# Read-state model (user-revised 2026-06-11):
+# - Status-bar counts mean "still outstanding" and stay up until items are
+#   explicitly cleared here (mark-read / react / clear-all) -- matching the PR
+#   review count's stays-until-handled semantics. Opening the popup does NOT
+#   quiet the bar. (A look-resets-count watermark existed briefly; reversed.)
+# - GitHub state is only mutated by the explicit actions above, never
+#   automatically.
+#
+# Reason folding matches tmux-status-github-poll: team_mention -> mention,
+# author -> comment. review_requested is handled by the PR popup, not here.
+
+set -euo pipefail
+
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-status"
+POLLER="$HOME/.config/tmux/scripts/tmux-status-github-poll"
+SELF="$0"
+
+# Rows are tab-delimited: display<TAB>thread_id<TAB>url. The url is the latest
+# comment when there is one, else the subject (PR/issue) -- it serves both the
+# preview (body) and open (html_url) actions. fzf shows field 1 only.
+list_rows() {
+  gh api -H "Accept: application/vnd.github+json" "/notifications?per_page=50" \
+  | jq -r '
+    def ago: (now - fromdateiso8601) as $s
+      | if   $s < 3600  then "\(($s / 60)    | floor)m"
+        elif $s < 86400 then "\(($s / 3600)  | floor)h"
+        else                 "\(($s / 86400) | floor)d"
+        end;
+    .[]
+    | (.reason
+       | if . == "team_mention" then "mention"
+         elif . == "author" then "comment"
+         else . end) as $r
+    | select($r == "mention" or $r == "comment" or $r == "assign")
+    | (($r + "        ")[:8]) as $tag
+    | "\($tag) \(.subject.title)  (\(.updated_at | ago))\t\(.id)\t\(.subject.latest_comment_url // .subject.url // "")"
+  '
+}
+
+show_preview() {
+  url="$1"
+  if [ -z "$url" ]; then
+    echo "(no preview available)"
+    return
+  fi
+  gh api "$url" --jq '.body // .title // "(no body)"' 2>/dev/null \
+    || echo "(could not fetch preview)"
+}
+
+open_in_browser() {
+  url="$1"
+  if [ -z "$url" ]; then
+    return
+  fi
+  html_url="$(gh api "$url" --jq '.html_url // empty' 2>/dev/null)"
+  if [ -n "$html_url" ]; then
+    open "$html_url"
+  fi
+}
+
+mark_read() {
+  gh api --method PATCH "/notifications/threads/$1" >/dev/null 2>&1 || true
+}
+
+# Acknowledge: thumbs-up the latest comment, then mark the thread read. Reactions
+# only attach to comment/issue objects; if the url is not reactable this quietly
+# degrades to just mark-read.
+react_and_mark_read() {
+  url="$1"
+  thread_id="$2"
+  if [ -n "$url" ]; then
+    gh api --method POST "${url}/reactions" -f content='+1' >/dev/null 2>&1 || true
+  fi
+  mark_read "$thread_id"
+}
+
+clear_all() {
+  list_rows | cut -f2 | while read -r thread_id; do
+    mark_read "$thread_id"
+  done
+}
+
+case "${1:-}" in
+  --list)      list_rows;                      exit 0 ;;
+  --preview)   show_preview "${2:-}";          exit 0 ;;
+  --open)      open_in_browser "${2:-}";       exit 0 ;;
+  --mark-read) mark_read "${2:-}";             exit 0 ;;
+  --react)     react_and_mark_read "${2:-}" "${3:-}"; exit 0 ;;
+  --clear-all) clear_all;                      exit 0 ;;
+esac
+
+mkdir -p "$CACHE_DIR"
+
+rows="$(list_rows)"
+
+# Re-poll on exit so the status-bar count reflects any mark-read / clear-all
+# actions taken in the popup, without waiting for the next 60s tick.
+trap '"$POLLER" >/dev/null 2>&1 &' EXIT
+
+if [ -z "$rows" ]; then
+  printf '\n  No mentions, comments, or assignments.\n\n  Press any key to close. '
+  read -rsn1 _
+  exit 0
+fi
+
+printf '%s\n' "$rows" | fzf \
+  --delimiter="$(printf '\t')" \
+  --with-nth=1 \
+  --reverse \
+  --no-multi \
+  --prompt='notifications > ' \
+  --header='enter: open    ctrl-d: mark read    ctrl-t: thumbs-up + read    ctrl-x: clear all    esc: close' \
+  --preview="$SELF --preview {3}" \
+  --preview-window=right:55%:wrap \
+  --bind="enter:execute-silent($SELF --open {3})" \
+  --bind="ctrl-d:execute-silent($SELF --mark-read {2})+reload($SELF --list)" \
+  --bind="ctrl-t:execute-silent($SELF --react {3} {2})+reload($SELF --list)" \
+  --bind="ctrl-x:execute-silent($SELF --clear-all)+reload($SELF --list)"
