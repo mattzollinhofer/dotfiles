@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# tmux-github-review-queue
+#
+# Emits the classified review queue as a JSON array on stdout. This is the single
+# source of truth shared by tmux-status-github-poll (which turns it into status
+# counts) and tmux-pr-popup (which renders it as rows), so the status bar and the
+# popup can never disagree about what is in the queue or how it is classified.
+#
+# The queue is `review-requested:@me` -- every open PR with an OUTSTANDING review
+# request to me, directly or via a team I'm on. Once I submit a review the request
+# clears and the PR leaves this set, so a PR is here only while it is genuinely
+# waiting on me OR up for grabs by my team.
+#
+# Classification (see the role-flipped #8860 walkthrough that motivated this):
+#   team        review requested from a team I'm on; nobody has personally
+#               claimed it -> up for grabs, the real shared review queue.
+#   mine        requested from me individually and I have NOT reviewed it yet
+#               -> a routine personal ask. Visible, but not urgent.
+#   mine_action requested from me individually AND I have reviewed it before
+#               -> a RE-REQUEST after the author pushed changes -> act now.
+#
+# A PR in the queue whose reviewRequests is empty (GitHub's search index lagging
+# behind a satisfied/removed request, as #173 showed) is treated as `team` at the
+# lowest priority, so a stale entry can never falsely light up red.
+#
+# NOT covered here: a PR where the author commented back to me but did NOT
+# re-request review. That PR has no outstanding request, so it is not in this
+# queue at all (the #8860 "05-20 round"). Catching it needs a separate
+# reviewed-by:@me pass comparing comment times to my last review -- a planned
+# fast-follow, deliberately out of scope for this script.
+#
+# Output element schema:
+#   { "number": 9055, "title": "...", "url": "...", "updatedAt": "...",
+#     "class": "mine_action" | "team" | "mine", "reason": "re_request" | "" }
+# The array is priority-sorted: mine_action, then team, then mine; ties broken by
+# most-recently-updated first. Presentation (icons, colors) is NOT here -- it
+# lives in the consumers, so it can change without re-querying GitHub.
+
+set -euo pipefail
+
+# launchd / display-popup hand us a minimal PATH; brew binaries live outside it.
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+GITHUB_ORG="welcomehome-software"
+
+me="$(gh api user --jq .login)"
+
+# The queue itself. gh search prs does not expose reviewRequests, so we get the
+# bare list here and enrich each PR below. --review-requested=@me matches team
+# requests for teams I'm on too, which is exactly the superset we want to split.
+queue="$(gh search prs --state=open --owner="$GITHUB_ORG" --review-requested=@me \
+  --json number,title,url,updatedAt)"
+
+# Enrich each PR with the two facts classification needs: who the review is
+# currently requested from (reviewRequests, which carries __typename User|Team)
+# and whether I have ever reviewed it (to tell a first ask from a re-request).
+# PRs can live in different repos in the org (#173 is in playbook), so the repo
+# is parsed from the PR url rather than assumed to be welcomehome.
+enriched="[]"
+while IFS=$'\t' read -r number repo; do
+  [ -n "$number" ] || continue
+  detail="$(gh pr view "$number" --repo "$repo" \
+    --json number,reviewRequests,reviews 2>/dev/null)" || continue
+  enriched="$(jq -c --argjson d "$detail" '. + [$d]' <<<"$enriched")"
+done < <(printf '%s' "$queue" | jq -r '.[] | "\(.number)\t\(.url | split("/")[3:5] | join("/"))"')
+
+# Join the queue (titles, urls, ages) with the enrichment (requests, reviews) by
+# number, classify, and priority-sort. All the logic is one jq pass so the rules
+# read top-to-bottom and stay in lockstep with the header comment above.
+jq -cn --argjson queue "$queue" --argjson enriched "$enriched" --arg me "$me" '
+  ($enriched | map({ (.number | tostring): . }) | add // {}) as $byNumber
+  | $queue
+  | map(
+      . as $pr
+      | ($byNumber[$pr.number | tostring]) as $d
+      | (($d.reviewRequests // []) | any(.__typename == "User"  and .login == $me)) as $mineReq
+      | (($d.reviews        // []) | any(.author.login == $me))                     as $iReviewed
+      | (if $mineReq and $iReviewed then { class: "mine_action", reason: "re_request" }
+         elif $mineReq              then { class: "mine",        reason: "" }
+         else                            { class: "team",        reason: "" }
+         end) as $c
+      | { number: $pr.number, title: $pr.title, url: $pr.url,
+          updatedAt: $pr.updatedAt, class: $c.class, reason: $c.reason }
+    )
+  | sort_by(
+      ({ mine_action: 0, team: 1, mine: 2 }[.class]),
+      (.updatedAt | fromdateiso8601 | -.)
+    )
+'
