@@ -24,6 +24,11 @@ PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 export PATH
 
 GITHUB_ORG="welcomehome-software"
+POLLER="$HOME/.config/tmux/scripts/tmux-status-github-poll"
+
+# Re-poll on exit so the status bar reflects any change without waiting for the
+# next 60s tick. Fires on every exit path.
+trap '"$POLLER" >/dev/null 2>&1 &' EXIT
 
 json="$(gh search prs --state=open --owner="$GITHUB_ORG" --review-requested=@me \
   --json number,title,updatedAt,url)"
@@ -54,6 +59,6 @@ paste -d "$(printf '\t')" <(printf '%s\n' "$display") <(printf '%s\n' "$urls") |
   --no-multi \
   --prompt='review > ' \
   --header='enter: open    ctrl-y: copy url    ctrl-s: stealth review    esc: close' \
-  --bind='enter:become(open {2})' \
+  --bind='enter:execute-silent(open {2})+abort' \
   --bind='ctrl-y:execute-silent(printf %s {2} | pbcopy)+abort' \
   --bind='ctrl-s:execute-silent(~/.config/tmux/scripts/tmux-pr-worktree {2} stealth)+abort'
