@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# tmux-stealth-review
+#
+# Quietly look at a PR before deciding whether to sign up for reviewing it.
+# Opens a NEW tmux window named "stealth-review" in the PR's repo, enters the
+# shared stealth worktree, and runs `prs r --stealth <number>` (playbook
+# bin/prs), which checks out the PR branch without posting the "I'm starting to
+# review" comment or touching reviewer assignments.
+#
+# Usage: tmux-stealth-review <pr-url>        (e.g. from the PR popup, ctrl-s)
+#        tmux-stealth-review <pr-number>     (assumes the welcomehome repo)
+#
+# Worktree strategy: ONE fixed worktree per repo, named "stealth-review",
+# reused forever. First use creates it via worktrunk (`w stealth-review`);
+# later uses just cd in -- `gh pr checkout` inside `prs r` switches the
+# worktree between PR branches, so long stacked-branch names never end up in
+# the path and repeat use cannot collide. If the PR branch is already checked
+# out in another worktree, git refuses and the error is visible in the window.
+#
+# The window gets an interactive shell and the commands are typed into it
+# (send-keys), because `w` is a zsh function from worktrunk.zsh, not a binary.
+
+set -euo pipefail
+
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+arg="${1:-}"
+if [ -z "$arg" ]; then
+  tmux display-message "tmux-stealth-review: need a PR url or number"
+  exit 1
+fi
+
+if [ "${arg#https://github.com/}" != "$arg" ]; then
+  IFS=/ read -r _org repo _kind number <<<"${arg#https://github.com/}"
+else
+  repo="welcomehome"
+  number="$arg"
+fi
+
+case "$number" in
+  *[!0-9]* | "")
+    tmux display-message "tmux-stealth-review: could not parse PR number from: $arg"
+    exit 1
+    ;;
+esac
+
+repo_dir="$HOME/code/$repo"
+if [ ! -d "$repo_dir" ]; then
+  tmux display-message "tmux-stealth-review: no local clone at $repo_dir"
+  exit 1
+fi
+
+# Worktree path per worktrunk's template:
+#   {{ repo_path }}/../worktrees/{{ repo_path | basename }}/{{ branch | sanitize }}
+# repo_path must be the PRIMARY worktree (first entry of `git worktree list`),
+# same reasoning as tmux-spawn-worktree.
+repo_path="$(git -C "$repo_dir" worktree list --porcelain | head -n 1)"
+repo_path="${repo_path#worktree }"
+worktree_path="$repo_path/../worktrees/$(basename "$repo_path")/stealth-review"
+
+win_id="$(tmux new-window -P -F '#{window_id}' -n stealth-review -c "$repo_dir")"
+
+if [ -d "$worktree_path" ]; then
+  enter_cmd="cd $(printf '%q' "$worktree_path")"
+else
+  enter_cmd="w stealth-review"
+fi
+
+# Give the new shell a moment to finish sourcing rc files before typing.
+sleep 0.4
+tmux send-keys -t "$win_id" -l "$enter_cmd && prs r --stealth $number"
+tmux send-keys -t "$win_id" Enter
