@@ -62,7 +62,14 @@ esac
 # Resolve the worktree path from worktrunk's path template:
 #   {{ repo_path }}/../worktrees/{{ repo_path | basename }}/{{ branch | sanitize }}
 # `sanitize` just replaces `/` and `\` with `-`.
-repo_path=$(cd "$origin_dir" && git rev-parse --show-toplevel 2>/dev/null)
+#
+# worktrunk's {{ repo_path }} is always the PRIMARY worktree, regardless of which
+# worktree we're invoked from. `git rev-parse --show-toplevel` would give the
+# *current* worktree, so triggering this from inside a worktree would compute a
+# bogus nested path and the poll below would time out before the panes split.
+# The first entry of `git worktree list` is always the main worktree.
+repo_path=$(cd "$origin_dir" && git worktree list --porcelain 2>/dev/null | head -n 1)
+repo_path="${repo_path#worktree }"
 if [ -z "$repo_path" ]; then
   tmux display-message "tmux-spawn-worktree: not in a git repo at $origin_dir"
   exit 1
@@ -87,6 +94,7 @@ for _ in $(seq 1 200); do
 done
 
 if [ ! -d "$path" ]; then
+  echo "tmux-spawn-worktree: timed out waiting for worktree dir: $path (repo_path=$repo_path branch=$branch)" >&2
   tmux display-message "tmux-spawn-worktree: timed out waiting for $path"
   exit 1
 fi
