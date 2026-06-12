@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# tmux-ready-popup
+#
+# fzf list of my own OPEN, approved, non-draft PRs -- the "ready to merge" queue
+# the status line counts (green merge glyph) -- for use inside a tmux
+# display-popup.
+#
+#   enter   open the highlighted PR in the browser, to double-check the branch
+#   ctrl-w  open (or jump to) the PR's worktrunk worktree window; run `prs ram`
+#           (rebase-and-merge) there yourself -- the merge stays manual
+#   ctrl-b  both: open the browser AND the worktree
+#   ctrl-y  copy the PR URL to the clipboard, then close
+#   esc     close
+#
+# The source query matches tmux-status-github-poll's ready_to_merge count, so the
+# list and the status-bar number can never disagree.
+#
+# Columns: #id, repo, title, relative-age. Unlike the review popup, the repo IS
+# shown: ready-to-merge spans the whole org (e.g. welcomehome and playbook), so
+# the repo is signal, not noise. The PR URL rides along as a hidden trailing
+# field (the key bindings read it as {2}); it is pasted on AFTER alignment so
+# `column` never sees it.
+
+set -euo pipefail
+
+# display-popup may hand us a minimal PATH; brew binaries (gh, fzf) live outside it.
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+GITHUB_ORG="welcomehome-software"
+POLLER="$HOME/.config/tmux/scripts/tmux-status-github-poll"
+
+# Re-poll on exit so the status bar reflects any change (e.g. a merge you kicked
+# off) without waiting for the next 60s tick. Fires on every exit path.
+trap '"$POLLER" >/dev/null 2>&1 &' EXIT
+
+json="$(gh search prs --state=open --owner="$GITHUB_ORG" --author=@me \
+  --review=approved --draft=false --json number,repository,title,updatedAt,url)"
+
+if [ "$(printf '%s' "$json" | jq 'length')" -eq 0 ]; then
+  printf '\n  No approved PRs ready to merge.\n\n  Press any key to close. '
+  read -rsn1 _
+  exit 0
+fi
+
+# Aligned display columns (no URL), then the URLs in the same order, then paste
+# them back together with a single tab so fzf can show columns 1-4 and act on {2}.
+display="$(printf '%s' "$json" | jq -r '
+  def ago: (now - fromdateiso8601) as $s
+    | if   $s < 3600  then "\(($s / 60)    | floor)m ago"
+      elif $s < 86400 then "\(($s / 3600)  | floor)h ago"
+      else                 "\(($s / 86400) | floor)d ago"
+      end;
+  .[] | "#\(.number)\t\(.repository.name)\t\(.title)\t\(.updatedAt | ago)"
+' | column -t -s "$(printf '\t')")"
+
+urls="$(printf '%s' "$json" | jq -r '.[].url')"
+
+paste -d "$(printf '\t')" <(printf '%s\n' "$display") <(printf '%s\n' "$urls") | fzf \
+  --delimiter="$(printf '\t')" \
+  --with-nth=1 \
+  --reverse \
+  --no-multi \
+  --prompt='merge > ' \
+  --header='enter: browser    ctrl-w: worktree    ctrl-b: both    ctrl-y: copy url    esc: close' \
+  --bind='enter:execute-silent(open {2})+abort' \
+  --bind='ctrl-w:execute-silent(~/.config/tmux/scripts/tmux-pr-worktree {2} merge)+abort' \
+  --bind='ctrl-b:execute-silent(open {2})+execute-silent(~/.config/tmux/scripts/tmux-pr-worktree {2} merge)+abort' \
+  --bind='ctrl-y:execute-silent(printf %s {2} | pbcopy)+abort'

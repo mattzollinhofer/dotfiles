@@ -10,9 +10,9 @@
 # never block on the network.
 #
 # Two sources, deliberately:
-#   - review_requested comes from `gh search prs` (mirrors playbook's `prs me`):
-#     OPEN PRs in the work org where my review is requested. This is the live,
-#     actionable queue.
+#   - review_requested and ready_to_merge come from `gh search prs` (the live,
+#     actionable queues): OPEN org PRs where my review is requested, and my own
+#     OPEN approved PRs ready to merge.
 #   - mention / comment / assign come from the /notifications inbox.
 #
 # Why split: /notifications is an UNREAD-INBOX model. A review_requested thread
@@ -62,6 +62,14 @@ review_count="$(gh search prs --state=open --owner="$GITHUB_ORG" \
   --review-requested=@me --json number --jq 'length' 2>/dev/null)" \
   || bail "gh search prs failed"
 
+# ready_to_merge: my own OPEN, non-draft PRs that are already approved -- a quick
+# win to just bang out a merge. Same live-queue model as review_requested.
+# Deliberately NOT gated on checks-passed / staging-deployed yet; that refinement
+# is a parked TODO, not part of this first cut.
+ready_count="$(gh search prs --state=open --owner="$GITHUB_ORG" \
+  --author=@me --review=approved --draft=false --json number --jq 'length' 2>/dev/null)" \
+  || bail "gh search prs (approved) failed"
+
 # mention / comment / assign: still the notifications inbox (read-once events).
 raw="$(gh api -H "Accept: application/vnd.github+json" \
   "/notifications?per_page=50" 2>/dev/null)" \
@@ -89,8 +97,10 @@ notif_items="$(printf '%s' "$raw" | jq -c '
 # Combine the live review count with the notification-derived items. The review
 # item is included even at zero: the status line always shows the review count
 # ("0" = confirmed nothing waiting, distinguishable from broken/stale).
-items="$(jq -cn --argjson review "$review_count" --argjson notif "$notif_items" '
-  [{ key: "review_requested", count: $review }] + $notif
+items="$(jq -cn --argjson review "$review_count" --argjson ready "$ready_count" \
+  --argjson notif "$notif_items" '
+  [{ key: "review_requested", count: $review },
+   { key: "ready_to_merge",   count: $ready }] + $notif
 ')"
 
 now="$(date +%s)"
