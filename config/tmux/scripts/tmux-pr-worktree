@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# tmux-pr-worktree
+#
+# Bring up a PR's worktree in tmux, via worktrunk. REUSE-OR-SPAWN: if a tmux pane
+# is already sitting in this PR's worktree anywhere in the server, just switch to
+# it; otherwise open a new window and set it up. So a given PR gets at most one
+# window, no matter how many times you hit the key -- we don't spew a fresh
+# window per keypress.
+#
+# Two modes decide what a freshly-spawned window runs (reuse never re-runs them,
+# it only navigates):
+#
+#   stealth  w pr:<n> && prs r --stealth <url>
+#            Quietly look at a PR before signing up to review it -- checks out
+#            and shows the comments + prr review file, posting nothing and
+#            touching no reviewer assignments.
+#
+#   merge    w pr:<n>
+#            Land in the PR's worktree to merge it. Auto-runs NOTHING: you
+#            double-check the branch and run `prs ram` (rebase-and-merge)
+#            yourself. The merge is deliberately your finger on Enter.
+#
+# Worktrunk owns the worktree on purpose. `wt switch` (which `w pr:<n>` calls) is
+# create-or-switch in one command, runs the welcomehome pre/post-start hooks (so
+# the worktree comes up as a configured, runnable env: ports, db, direnv), and
+# names the worktree after the PR's OWN branch at a DETERMINISTIC path -- which is
+# exactly what makes reuse detection possible: one worktree per branch at a known
+# location. `wt switch pr:<n>` is a plain checkout (no review comment, no reviewer
+# assignment). prs needs the full PR URL, not a bare number; stealth hands it that.
+#
+# Usage: tmux-pr-worktree <pr-url>     [stealth|merge]   (from a popup, e.g. {2})
+#        tmux-pr-worktree <pr-number>  [stealth|merge]   (assumes welcomehome)
+#        (mode defaults to stealth)
+#
+# Spawn types the commands into an interactive shell (send-keys) because `w`/`wt`
+# are zsh functions (worktrunk's cd shim), not binaries.
+
+set -euo pipefail
+
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+export PATH
+
+arg="${1:-}"
+mode="${2:-stealth}"
+if [ -z "$arg" ]; then
+  tmux display-message "tmux-pr-worktree: need a PR url or number"
+  exit 1
+fi
+
+# Resolve org / repo / number / url from either a full PR url or a bare number
+# (which we assume is a welcomehome PR).
+if [ "${arg#https://github.com/}" != "$arg" ]; then
+  IFS=/ read -r org repo _kind number <<<"${arg#https://github.com/}"
+  pr_url="$arg"
+else
+  org="welcomehome-software"
+  repo="welcomehome"
+  number="$arg"
+  pr_url="https://github.com/$org/$repo/pull/$number"
+fi
+
+case "$number" in
+  *[!0-9]* | "")
+    tmux display-message "tmux-pr-worktree: could not parse PR number from: $arg"
+    exit 1
+    ;;
+esac
+
+case "$mode" in
+  stealth) run="w pr:$number && prs r --stealth $pr_url" ;;
+  merge)   run="w pr:$number" ;;
+  *)
+    tmux display-message "tmux-pr-worktree: unknown mode '$mode' (want stealth|merge)"
+    exit 1
+    ;;
+esac
+
+repo_dir="$HOME/code/$repo"
+if [ ! -d "$repo_dir" ]; then
+  tmux display-message "tmux-pr-worktree: no local clone at $repo_dir"
+  exit 1
+fi
+
+# --- reuse: is this PR's worktree already open in a pane somewhere? -----------
+# Resolve the PR's head branch and reconstruct worktrunk's deterministic worktree
+# path, then look for a pane whose cwd is (under) it. A failed branch lookup just
+# skips reuse and falls through to spawn.
+branch="$(gh pr view "$number" --repo "$org/$repo" --json headRefName \
+  --jq '.headRefName' 2>/dev/null || true)"
+
+if [ -n "$branch" ]; then
+  # worktrunk template: {{repo_path}}/../worktrees/{{repo_path|basename}}/{{branch|sanitize}}
+  # repo_path is the PRIMARY worktree (first `git worktree list` entry); sanitize
+  # turns / and \ into -.
+  repo_path="$(git -C "$repo_dir" worktree list --porcelain | head -n 1)"
+  repo_path="${repo_path#worktree }"
+  repo_parent="$(cd "$repo_path/.." && pwd)"
+  sanitized="${branch//\//-}"
+  sanitized="${sanitized//\\/-}"
+  worktree_path="$repo_parent/worktrees/$(basename "$repo_path")/$sanitized"
+
+  target_window=""
+  target_session=""
+  while IFS=$'\t' read -r pane_path session window; do
+    case "$pane_path" in
+      "$worktree_path" | "$worktree_path"/*)
+        target_window="$window"
+        target_session="$session"
+        break
+        ;;
+    esac
+  done < <(tmux list-panes -a \
+    -F '#{pane_current_path}'$'\t''#{session_name}'$'\t''#{window_id}')
+
+  if [ -n "$target_window" ]; then
+    tmux switch-client -t "$target_session" 2>/dev/null || true
+    tmux select-window -t "$target_window"
+    exit 0
+  fi
+fi
+
+# --- spawn: nothing open for this PR; make its window and set it up -----------
+win_id="$(tmux new-window -P -F '#{window_id}' -n "pr-$number" -c "$repo_dir")"
+
+# Give the new shell a moment to source its rc files (worktrunk's `w`/`wt` shims
+# load from the zsh profile) before typing. merge stops after `w pr:<n>`: you run
+# `prs ram` yourself.
+sleep 0.4
+tmux send-keys -t "$win_id" -l "$run"
+tmux send-keys -t "$win_id" Enter

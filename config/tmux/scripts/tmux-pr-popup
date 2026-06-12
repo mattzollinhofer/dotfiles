@@ -6,7 +6,7 @@
 #
 #   enter   open the highlighted PR in the browser
 #   ctrl-y  copy the PR URL to the clipboard, then close
-#   ctrl-s  stealth-review: new window, shared stealth worktree, prs r --stealth
+#   ctrl-s  stealth-review: new window, worktrunk PR worktree, prs r --stealth
 #   esc     close
 #
 # The source query matches playbook `prs me` and tmux-status-github-poll, so this
@@ -56,4 +56,4 @@ paste -d "$(printf '\t')" <(printf '%s\n' "$display") <(printf '%s\n' "$urls") |
   --header='enter: open    ctrl-y: copy url    ctrl-s: stealth review    esc: close' \
   --bind='enter:become(open {2})' \
   --bind='ctrl-y:execute-silent(printf %s {2} | pbcopy)+abort' \
-  --bind='ctrl-s:execute-silent(~/.config/tmux/scripts/tmux-stealth-review {2})+abort'
+  --bind='ctrl-s:execute-silent(~/.config/tmux/scripts/tmux-pr-worktree {2} stealth)+abort'
