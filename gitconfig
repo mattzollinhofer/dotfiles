@@ -17,7 +17,8 @@
   fwl = push --force-with-lease
   d = diff
   d1 = diff @{1}
-  rd = range-diff @{1}@{u}..@{1} @{u}..
+  rdxxx = range-diff @{1}@{u}..@{1} @{u}..
+  rd = range-diff @{u} @{1} HEAD
   br = branch
   review = log -p
   ds = diff --staged
