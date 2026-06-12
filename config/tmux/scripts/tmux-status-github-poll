@@ -86,11 +86,11 @@ notif_items="$(printf '%s' "$raw" | jq -c '
   | map({ key: .[0], count: length })
 ')"
 
-# Combine the live review count with the notification-derived items. A zero
-# review count is dropped here so render does not have to special-case it.
+# Combine the live review count with the notification-derived items. The review
+# item is included even at zero: the status line always shows the review count
+# ("0" = confirmed nothing waiting, distinguishable from broken/stale).
 items="$(jq -cn --argjson review "$review_count" --argjson notif "$notif_items" '
-  ( if $review > 0 then [{ key: "review_requested", count: $review }] else [] end )
-  + $notif
+  [{ key: "review_requested", count: $review }] + $notif
 ')"
 
 now="$(date +%s)"

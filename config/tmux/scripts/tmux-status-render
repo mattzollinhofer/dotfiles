@@ -29,6 +29,7 @@ COLOR_MENTION="#1e66f5"  # blue     - someone pinged you
 COLOR_ASSIGN="#fe640b"   # peach    - assigned to you
 COLOR_COMMENT="#6c6f85"  # subtext0 - lower-signal chatter
 COLOR_STALE="#9ca0b0"    # overlay0 - dim / unknown
+COLOR_ZERO="#9ca0b0"     # overlay0 - confirmed empty (review count at 0)
 
 # Nerd Font (MesloLGS NF) glyphs, emitted as UTF-8 octal so the script is portable
 # across bash versions. These are rendered content, not decoration; change freely.
@@ -67,14 +68,19 @@ render_github() {
     return
   fi
 
-  # Stable, urgency-first order regardless of how the poller happened to list them.
+  # Stable, urgency-first order regardless of how the poller happened to list
+  # them. The review count renders even at 0 (muted) so "nothing waiting" is
+  # visibly different from "broken"; the other segments stay hidden at zero.
   local order="review_requested mention assign comment"
   local key count
   for key in $order; do
     count="$(jq -r --arg k "$key" \
       '(.items[] | select(.key == $k) | .count) // empty' "$file" 2>/dev/null)"
-    if [ -n "$count" ] && [ "$count" -gt 0 ] 2>/dev/null; then
+    [ -n "$count" ] || continue
+    if [ "$count" -gt 0 ] 2>/dev/null; then
       out="$out#[fg=$(color_for "$key")]$(icon_for "$key") $count#[default] "
+    elif [ "$key" = "review_requested" ]; then
+      out="$out#[fg=$COLOR_ZERO]$(icon_for "$key") 0#[default] "
     fi
   done
 }
