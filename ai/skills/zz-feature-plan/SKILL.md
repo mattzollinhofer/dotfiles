@@ -13,9 +13,10 @@ Figma URL, spreadsheet URL, evidence, acceptance criteria, or feedback notes,
 incorporate those details explicitly. Do not plan only from the branch name or
 from existing code.
 
-This command is for planning only. Do not implement the feature. Do not create
-`plan.md` until the feature-understanding checkpoint, including proposed
-commit/test staging, has been approved.
+This command is for planning only. Do not implement the feature. After blocking
+questions are resolved, capture the feature-understanding checkpoint in an
+uncommitted `draft-plan.md`. Do not create `plan.md` until the checkpoint,
+including proposed commit/test staging, has been approved.
 
 ## Stage 1: Gather all product and design evidence
 
@@ -45,6 +46,9 @@ implementation.
 
 ## Stage 2: Explore and reflect on the codebase
 
+Read `references/technical_overview.md` completely and follow it while
+researching and explaining the feature area.
+
 Before proposing tests, understand how the feature should fit into the existing
 implementation.
 
@@ -63,6 +67,8 @@ plan. The sub-agent should return a concise summary of:
 - overloaded or fuzzy domain terms that should be clarified before planning
 - existing WelcomeHome guidelines or review-plan guidance that should shape the
   implementation
+- enough verified product and technical context to write the developer-oriented
+  overview required by `references/technical_overview.md`
 
 After the sub-agent returns, personally read the most important files yourself.
 Do not outsource the feature interpretation entirely to the sub-agent. Reflect
@@ -105,7 +111,14 @@ the feature-understanding checkpoint.
 If nothing is ambiguous, say that no blocking questions came up and proceed to
 the feature-understanding checkpoint.
 
-The feature-understanding checkpoint should be concise but explicit. Include:
+Write the checkpoint to an uncommitted `draft-plan.md` and mark it clearly as a
+provisional draft. Use the draft as a shared textual and visual review surface
+while continuing to discuss its contents with the user. Do not begin
+implementation from the draft.
+
+The feature-understanding checkpoint should be explicit. Keep its sections
+concise except where the technical overview needs more space to orient a
+developer who is new to the feature area. Include:
 
 - **Evidence reviewed**: ticket, comments, Figma images, screenshots,
   spreadsheets, existing code, and tests that shaped your understanding
@@ -113,6 +126,10 @@ The feature-understanding checkpoint should be concise but explicit. Include:
   terms, not just a list of requested changes
 - **Code reality**: how the current implementation behaves and where the new
   behavior likely belongs
+- **Technical overview**: a developer-oriented introduction to the product area
+  and its implementation that follows `references/technical_overview.md`.
+  Provide enough context for a developer new to this subsystem to understand
+  and evaluate the proposed plan, not merely locate the files likely to change.
 - **Domain language and design boundaries**: the ubiquitous terms the
   implementation should use, overloaded or fuzzy terms to avoid, conflicts with
   existing WelcomeHome language, established architectural facts, existing
@@ -161,16 +178,17 @@ The feature-understanding checkpoint should be concise but explicit. Include:
 
 - **Proposed rewritten ticket description** when it would make the work clearer
 
-Ask the user to confirm the cohesive feature thesis, domain language and design
-boundaries, proposed commit/test staging, and any acceptance-criteria cleanup
-before moving on. Proceed only after the user confirms or corrects the
-understanding.
+Ask the user to review `draft-plan.md` and confirm the cohesive feature thesis,
+technical overview, domain language and design boundaries, proposed commit/test
+staging, and any acceptance-criteria cleanup before moving on. Keep discussing
+and revising the draft until the user confirms or corrects the understanding.
 
 ## Stage 4: Test-planning rules for proposed commits
 
 Use these rules when preparing the proposed commit/test staging in the
-feature-understanding checkpoint and when writing `plan.md`. Do not present a
-separate test-strategy gate after the user confirms the feature understanding;
+feature-understanding checkpoint and when writing `draft-plan.md` or `plan.md`.
+Do not present a separate test-strategy gate after the user confirms the feature
+understanding;
 the test plan should already be visible inside the proposed commit staging.
 
 Think of testing as "test golf" -- maximize confidence with the fewest tests:
@@ -228,13 +246,14 @@ For each proposed commit, include test notes with:
 - what not to test or implement yet because it belongs to a later commit, is
   default behavior, is already covered, or is out of scope
 
-Do not write `plan.md` until the user has approved the feature-understanding
-checkpoint that includes the proposed commit/test staging.
+Do not promote `draft-plan.md` to `plan.md` until the user has approved the
+feature-understanding checkpoint that includes the technical overview and
+proposed commit/test staging. Do not commit `draft-plan.md`.
 
 ## Stage 5: Generate `plan.md`
 
 Using the approved feature understanding and proposed commit/test staging,
-generate a `plan.md` file.
+revise the draft as needed and rename `draft-plan.md` to `plan.md`.
 
 The file should contain these sections, in this order:
 
@@ -242,9 +261,12 @@ The file should contain these sections, in this order:
    product perspective. Keep this to 1-3 paragraphs. If helpful, use the
    rewritten ticket description approved in the feature-understanding
    checkpoint.
-2. **Decisions and Scope**: Clarifications, acceptance-criteria cleanup,
+2. **Technical Overview**: A developer-oriented introduction to the feature
+   space and its implementation, written according to
+   `references/technical_overview.md`.
+3. **Decisions and Scope**: Clarifications, acceptance-criteria cleanup,
    explicit non-goals, and product decisions made during the checkpoint.
-3. **Commit Plan**: The approved commit/test staging, formatted as a checklist
+4. **Commit Plan**: The approved commit/test staging, formatted as a checklist
    of commit-worthy slices. Each top-level checkbox must be exactly one complete
    commit slice: either a behavior-preserving `[DEV]` refactor or a
    product-visible feature slice. Do not create top-level checkboxes that only
@@ -252,17 +274,17 @@ The file should contain these sections, in this order:
    test, or split work by technical layer such as backend/frontend. Test-only
    and implementation-only steps may appear only as nested bullets inside the
    same product-visible checkbox.
-4. **Domain Language and Design Boundaries**: The approved ubiquitous language,
+5. **Domain Language and Design Boundaries**: The approved ubiquitous language,
    important distinctions between nearby concepts, established codebase seams
    and behavior owners, and responsibility boundaries. Describe new design by
    responsibilities and constraints rather than prescribing new classes,
    methods, signatures, or call graphs. Make clear that likely production files
    and possible collaborators are starting points, not required implementation
    shape.
-5. **Plan**: The implementation approach in 1-3 paragraphs.
-6. **Post-Implementation Verification**: A concise WHS review and final manual
+6. **Plan**: The implementation approach in 1-3 paragraphs.
+7. **Post-Implementation Verification**: A concise WHS review and final manual
    QA sequence that follows the requirements below.
-7. **Context**: Relevant file paths and what they are responsible for.
+8. **Context**: Relevant file paths and what they are responsible for.
 
 Plans should constrain product behavior and established responsibility
 boundaries, not freeze speculative implementation shape. Do not present a new
