@@ -2,6 +2,7 @@
 .secrets
 .netrc
 .ff-pins
+.pi-subagents
 
 tags
 .envrc
